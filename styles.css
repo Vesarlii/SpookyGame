@@ -1,0 +1,32 @@
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+  position: relative;
+}
+
+#canvasContainer {
+  position: absolute;
+  top: 70%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+canvas {
+  border: 1px solid #000;
+}
+
+#imageContainer {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+#imageContainer img {
+  width: 50%;
+  height: auto;
+}

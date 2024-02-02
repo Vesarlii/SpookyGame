@@ -4,47 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Spooky Game</title>
-  <style>
-	body {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		height: 100vh;
-		margin: 0;
-		position: relative;
-		background-color: black;
-	
-	}
-
-	#canvasContainer {
-		position: absolute;
-		top: 70%; 
-		transform: translateY(-50%);
-		z-index: 1;
-	}
-
-	canvas {
-		border: 1px solid #000;
-		background-color:grey;
-	}
-
-	#imageContainer {
-		position: absolute;
-		top: 0;
-		left: 30vw;
-		/*transform: translateX(-50%);
-		z-index: 2;*/
-		margin-top: 2vw;
-	}
-	#imageContainer img {
-		width: 50%;
-		height: auto;
-	}
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div id="imageContainer">
-    <img src="images\SpookyHeader.png" alt="Spooky Game"/>
+    <img src="images/SpookyHeader.png" alt="Spooky Game"/>
   </div>
   <div id="canvasContainer">
     <canvas id="myCanvas" width="1024" height="512"></canvas>
