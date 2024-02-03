@@ -16,7 +16,9 @@ body {
 
 canvas {
   border: 1px solid #000;
+  image-rendering: pixelated;
 }
+
 
 #imageContainer {
   position: absolute;
