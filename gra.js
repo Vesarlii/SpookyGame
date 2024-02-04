@@ -22,7 +22,8 @@ document.addEventListener("DOMContentLoaded", function () {
     moveLeft: false,
     moveRight: false,
     idleSprites: ["sprite_idle0.png", "sprite_idle1.png", "sprite_idle2.png", "sprite_idle3.png"],
-    runSprites: ["spriterun_0.png", "spriterun_1.png", "spriterun_2.png", "spriterun_3.png", "spriterun_4.png", "spriterun_5.png", "spriterun_6.png", "spriterun_7.png"],
+    runSpritesRight: ["spriterun_0.png", "spriterun_1.png", "spriterun_2.png", "spriterun_3.png", "spriterun_4.png", "spriterun_5.png", "spriterun_6.png", "spriterun_7.png"],
+    runSpritesLeft: ["spriterunleft_0.png", "spriterunleft_1.png", "spriterunleft_2.png", "spriterunleft_3.png", "spriterunleft_4.png", "spriterunleft_5.png", "spriterunleft_6.png", "spriterunleft_7.png"],
     currentRunSpriteIndex: 0,
     lastRunAnimationTime: 0,
     currentIdleSpriteIndex: 0,
@@ -40,7 +41,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function loadRunSprites() {
-    player.runSprites = loadSprites(player.runSprites, "spriterun_");
+    player.runSpritesRight = loadSprites(player.runSpritesRight, "spriterun_");
+    player.runSpritesLeft = loadSprites(player.runSpritesLeft, "run_left/spriterunleft_");
   }
 
   loadIdleSprites();
@@ -70,7 +72,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function startRunAnimation() {
     if (player.isMoving && (Date.now() - player.lastRunAnimationTime) > 100) {
-      player.currentRunSpriteIndex = (player.currentRunSpriteIndex + 1) % player.runSprites.length;
+      const runSprites = player.moveRight ? player.runSpritesRight : player.runSpritesLeft;
+      player.currentRunSpriteIndex = (player.currentRunSpriteIndex + 1) % runSprites.length;
       player.lastRunAnimationTime = Date.now();
     }
   }
@@ -105,12 +108,12 @@ document.addEventListener("DOMContentLoaded", function () {
     player.y += player.fallSpeed;
     player.fallSpeed += 0.1;
 
-    if (player.isMoving) {
-      startRunAnimation();
-      ctx.drawImage(player.runSprites[player.currentRunSpriteIndex], player.x, player.y, player.width, player.height);
-    } else {
-      ctx.drawImage(player.idleSprites[player.currentIdleSpriteIndex], player.x, player.y, player.width, player.height);
-    }
+    startRunAnimation();
+
+    const currentSprites = player.isMoving ? (player.moveRight ? player.runSpritesRight : player.runSpritesLeft) : player.idleSprites;
+    const currentSpriteIndex = player.isMoving ? player.currentRunSpriteIndex : player.currentIdleSpriteIndex;
+
+    ctx.drawImage(currentSprites[currentSpriteIndex], player.x, player.y, player.width, player.height);
 
     requestAnimationFrame(draw);
   }
