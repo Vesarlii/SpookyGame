@@ -9,44 +9,44 @@ document.addEventListener("DOMContentLoaded", function () {
   var background = new Image();
   background.src = "images/background.png";
 
-  var player = {
-    x: 50,
-    y: canvas.height - tileSize * 2 - 16,
-    width: 16,
-    height: 32,
-    speed: 2,
-    fallSpeed: 0,
-    jumpForce: 4,
-    isJumping: false,
-    isMoving: false,
-    moveLeft: false,
-    moveRight: false,
-    idleSprites: ["sprite_idle0.png", "sprite_idle1.png", "sprite_idle2.png", "sprite_idle3.png"],
-    runSpritesRight: ["spriterun_0.png", "spriterun_1.png", "spriterun_2.png", "spriterun_3.png", "spriterun_4.png", "spriterun_5.png", "spriterun_6.png", "spriterun_7.png"],
-    runSpritesLeft: ["spriterunleft_0.png", "spriterunleft_1.png", "spriterunleft_2.png", "spriterunleft_3.png", "spriterunleft_4.png", "spriterunleft_5.png", "spriterunleft_6.png", "spriterunleft_7.png"],
-    currentRunSpriteIndex: 0,
-    lastRunAnimationTime: 0,
-    currentIdleSpriteIndex: 0,
-    lastIdleAnimationTime: 0
-  };
+	var player = {
+		x: 50,
+		y: canvas.height - tileSize * 2 - 16,
+		width: 16,
+		height: 32,
+		speed: 2,
+		fallSpeed: 0,
+		jumpForce: 4,
+		isJumping: false,
+		isMoving: false,
+		moveLeft: false,
+		moveRight: false,
+		idleSprites: ["sprite_idle0.png", "sprite_idle1.png", "sprite_idle2.png", "sprite_idle3.png"],
+		runSpritesRight: ["spriterun_0.png", "spriterun_1.png", "spriterun_2.png", "spriterun_3.png", "spriterun_4.png", "spriterun_5.png", "spriterun_6.png", "spriterun_7.png"],
+		runSpritesLeft: ["spriterunleft_0.png", "spriterunleft_1.png", "spriterunleft_2.png", "spriterunleft_3.png", "spriterunleft_4.png", "spriterunleft_5.png", "spriterunleft_6.png", "spriterunleft_7.png"],
+		currentRunSpriteIndex: 0,
+		lastRunAnimationTime: 0,
+		currentIdleSpriteIndex: 0,
+		lastIdleAnimationTime: 0
+	};
 
-  var squares = [];
+	var squares = [];
+	
+	function loadSprites(spriteSet, prefix) {
+		return spriteSet.map((sprite, index) => Object.assign(new Image(), { src: "images/" + prefix + index + ".png" }));
+	}
 
-  function loadSprites(spriteSet, prefix) {
-    return spriteSet.map((sprite, index) => Object.assign(new Image(), { src: "images/" + prefix + index + ".png" }));
-  }
-
-  function loadIdleSprites() {
-    player.idleSprites = loadSprites(player.idleSprites, "sprite_idle");
-  }
+	function loadIdleSprites() {
+		player.idleSprites = loadSprites(player.idleSprites, "sprite_idle");
+	}
 
   function loadRunSprites() {
     player.runSpritesRight = loadSprites(player.runSpritesRight, "spriterun_");
     player.runSpritesLeft = loadSprites(player.runSpritesLeft, "run_left/spriterunleft_");
   }
 
-  loadIdleSprites();
-  loadRunSprites();
+	loadIdleSprites();
+	loadRunSprites();
 
   document.addEventListener("keydown", keyHandler);
   document.addEventListener("keyup", keyHandler);

@@ -1,31 +1,32 @@
 body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  margin: 0;
-  position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
+	margin: 0;
+	position: relative;
+	background-color: black;
 }
 
 #canvasContainer {
-  position: absolute;
-  top: 70%;
-  transform: translateY(-50%);
-  z-index: 1;
+	position: absolute;
+	top: 70%;
+	transform: translateY(-60%);
+	z-index: 1;
 }
 
 canvas {
-  border: 1px solid #000;
-  image-rendering: pixelated;
+	border: 1px solid #000;
+	image-rendering: pixelated;
 }
 
 
 #imageContainer {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-30%);
+	z-index: 2;
 }
 
 #imageContainer img {
