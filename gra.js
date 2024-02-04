@@ -4,7 +4,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   var tileSize = 16;
   var tileset = new Image();
-  tileset.src = "tileset.png"; 
+  tileset.src = "tileset.png";
+
+  var background = new Image();
+  background.src = "images/background.png";
 
   var player = {
     x: 50,
@@ -19,17 +22,29 @@ document.addEventListener("DOMContentLoaded", function () {
     moveLeft: false,
     moveRight: false,
     idleSprites: ["sprite_idle0.png", "sprite_idle1.png", "sprite_idle2.png", "sprite_idle3.png"],
+    runSprites: ["spriterun_0.png", "spriterun_1.png", "spriterun_2.png", "spriterun_3.png", "spriterun_4.png", "spriterun_5.png", "spriterun_6.png", "spriterun_7.png"],
+    currentRunSpriteIndex: 0,
+    lastRunAnimationTime: 0,
     currentIdleSpriteIndex: 0,
     lastIdleAnimationTime: 0
   };
 
   var squares = [];
 
+  function loadSprites(spriteSet, prefix) {
+    return spriteSet.map((sprite, index) => Object.assign(new Image(), { src: "images/" + prefix + index + ".png" }));
+  }
+
   function loadIdleSprites() {
-    player.idleSprites = player.idleSprites.map(sprite => Object.assign(new Image(), { src: "images/" + sprite }));
+    player.idleSprites = loadSprites(player.idleSprites, "sprite_idle");
+  }
+
+  function loadRunSprites() {
+    player.runSprites = loadSprites(player.runSprites, "spriterun_");
   }
 
   loadIdleSprites();
+  loadRunSprites();
 
   document.addEventListener("keydown", keyHandler);
   document.addEventListener("keyup", keyHandler);
@@ -53,12 +68,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  function startRunAnimation() {
+    if (player.isMoving && (Date.now() - player.lastRunAnimationTime) > 100) {
+      player.currentRunSpriteIndex = (player.currentRunSpriteIndex + 1) % player.runSprites.length;
+      player.lastRunAnimationTime = Date.now();
+    }
+  }
+
   for (let i = 0; i < canvas.width / tileSize; i++) {
     squares.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize });
   }
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
     squares.forEach(square => ctx.drawImage(tileset, 0, 0, tileSize, tileSize, square.x, square.y, tileSize, tileSize));
 
@@ -81,7 +105,12 @@ document.addEventListener("DOMContentLoaded", function () {
     player.y += player.fallSpeed;
     player.fallSpeed += 0.1;
 
-    ctx.drawImage(player.idleSprites[player.currentIdleSpriteIndex], player.x, player.y, player.width, player.height);
+    if (player.isMoving) {
+      startRunAnimation();
+      ctx.drawImage(player.runSprites[player.currentRunSpriteIndex], player.x, player.y, player.width, player.height);
+    } else {
+      ctx.drawImage(player.idleSprites[player.currentIdleSpriteIndex], player.x, player.y, player.width, player.height);
+    }
 
     requestAnimationFrame(draw);
   }
