@@ -50,17 +50,17 @@ document.addEventListener("DOMContentLoaded", function () {
   loadIdleSprites();
   loadRunSprites();
 
-  // Plansza z instrukcjami
+ 
   showInstructionScreen();
 
-  // Rozpoczęcie gry po wciśnięciu klawisza
+
   document.addEventListener("keydown", function startGameOnKeyPress() {
     document.removeEventListener("keydown", startGameOnKeyPress); // Usunięcie tego nasłuchiwania po pierwszym wciśnięciu klawisza
     hideInstructionScreen();
     startGame();
   });
 
-  // Funkcja wyświetlająca planszę z instrukcjami
+
   function showInstructionScreen() {
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ctx.font = "20px Arial";
     ctx.textAlign = "center";
 
-    // Dodaj własną instrukcję poniżej
+
     ctx.fillText("Witaj w mojej grze!", canvas.width / 2, canvas.height / 2 - 30);
     ctx.fillText("Sterowanie:", canvas.width / 2, canvas.height / 2);
     ctx.fillText("A - Ruch w lewo", canvas.width / 2, canvas.height / 2 + 30);
@@ -76,11 +76,11 @@ document.addEventListener("DOMContentLoaded", function () {
     ctx.fillText("Spacja - Skok", canvas.width / 2, canvas.height / 2 + 90);
     ctx.fillText("Naciśnij dowolny klawisz, aby rozpocząć", canvas.width / 2, canvas.height / 2 + 150);
 
-    // Dodatkowa informacja o widoczności planszy
+
     instructionScreenVisible = true;
   }
 
-  // Funkcja ukrywająca planszę z instrukcjami
+
   function hideInstructionScreen() {
     instructionScreenVisible = false;
   }
@@ -120,20 +120,18 @@ document.addEventListener("DOMContentLoaded", function () {
     player.x = 50;
     player.y = canvas.height - tileSize * 2 - 16;
 
-    // Zainicjalizuj stan gracza
     player.isJumping = false;
     player.isMoving = false;
     player.moveLeft = false;
     player.moveRight = false;
     player.fallSpeed = 0;
 
-    // Zresetuj animacje
     player.currentIdleSpriteIndex = 0;
     player.lastIdleAnimationTime = 0;
     player.currentRunSpriteIndex = 0;
     player.lastRunAnimationTime = 0;
 
-    // Ukryj planszę z instrukcjami
+
     hideInstructionScreen();
   }
 
@@ -146,7 +144,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-    // Rysuj planszę z instrukcjami, jeśli widoczna
+
     if (instructionScreenVisible) {
       showInstructionScreen();
     } else {
