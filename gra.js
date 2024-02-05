@@ -9,44 +9,81 @@ document.addEventListener("DOMContentLoaded", function () {
   var background = new Image();
   background.src = "images/background.png";
 
-	var player = {
-		x: 50,
-		y: canvas.height - tileSize * 2 - 16,
-		width: 16,
-		height: 32,
-		speed: 2,
-		fallSpeed: 0,
-		jumpForce: 4,
-		isJumping: false,
-		isMoving: false,
-		moveLeft: false,
-		moveRight: false,
-		idleSprites: ["sprite_idle0.png", "sprite_idle1.png", "sprite_idle2.png", "sprite_idle3.png"],
-		runSpritesRight: ["spriterun_0.png", "spriterun_1.png", "spriterun_2.png", "spriterun_3.png", "spriterun_4.png", "spriterun_5.png", "spriterun_6.png", "spriterun_7.png"],
-		runSpritesLeft: ["spriterunleft_0.png", "spriterunleft_1.png", "spriterunleft_2.png", "spriterunleft_3.png", "spriterunleft_4.png", "spriterunleft_5.png", "spriterunleft_6.png", "spriterunleft_7.png"],
-		currentRunSpriteIndex: 0,
-		lastRunAnimationTime: 0,
-		currentIdleSpriteIndex: 0,
-		lastIdleAnimationTime: 0
-	};
+  var instructionScreenVisible = false;
 
-	var squares = [];
-	
-	function loadSprites(spriteSet, prefix) {
-		return spriteSet.map((sprite, index) => Object.assign(new Image(), { src: "images/" + prefix + index + ".png" }));
-	}
+  var player = {
+    x: 50,
+    y: canvas.height - tileSize * 2 - 16,
+    width: 16,
+    height: 32,
+    speed: 2,
+    fallSpeed: 0,
+    jumpForce: 4,
+    isJumping: false,
+    isMoving: false,
+    moveLeft: false,
+    moveRight: false,
+    idleSprites: ["sprite_idle0.png", "sprite_idle1.png", "sprite_idle2.png", "sprite_idle3.png"],
+    runSpritesRight: ["spriterun_0.png", "spriterun_1.png", "spriterun_2.png", "spriterun_3.png", "spriterun_4.png", "spriterun_5.png", "spriterun_6.png", "spriterun_7.png"],
+    runSpritesLeft: ["spriterunleft_0.png", "spriterunleft_1.png", "spriterunleft_2.png", "spriterunleft_3.png", "spriterunleft_4.png", "spriterunleft_5.png", "spriterunleft_6.png", "spriterunleft_7.png"],
+    currentRunSpriteIndex: 0,
+    lastRunAnimationTime: 0,
+    currentIdleSpriteIndex: 0,
+    lastIdleAnimationTime: 0
+  };
 
-	function loadIdleSprites() {
-		player.idleSprites = loadSprites(player.idleSprites, "sprite_idle");
-	}
+  var squares = [];
+
+  function loadSprites(spriteSet, prefix) {
+    return spriteSet.map((sprite, index) => Object.assign(new Image(), { src: "images/" + prefix + index + ".png" }));
+  }
+
+  function loadIdleSprites() {
+    player.idleSprites = loadSprites(player.idleSprites, "sprite_idle");
+  }
 
   function loadRunSprites() {
     player.runSpritesRight = loadSprites(player.runSpritesRight, "spriterun_");
     player.runSpritesLeft = loadSprites(player.runSpritesLeft, "run_left/spriterunleft_");
   }
 
-	loadIdleSprites();
-	loadRunSprites();
+  loadIdleSprites();
+  loadRunSprites();
+
+  // Plansza z instrukcjami
+  showInstructionScreen();
+
+  // Rozpoczęcie gry po wciśnięciu klawisza
+  document.addEventListener("keydown", function startGameOnKeyPress() {
+    document.removeEventListener("keydown", startGameOnKeyPress); // Usunięcie tego nasłuchiwania po pierwszym wciśnięciu klawisza
+    hideInstructionScreen();
+    startGame();
+  });
+
+  // Funkcja wyświetlająca planszę z instrukcjami
+  function showInstructionScreen() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#fff";
+    ctx.font = "20px Arial";
+    ctx.textAlign = "center";
+
+    // Dodaj własną instrukcję poniżej
+    ctx.fillText("Witaj w mojej grze!", canvas.width / 2, canvas.height / 2 - 30);
+    ctx.fillText("Sterowanie:", canvas.width / 2, canvas.height / 2);
+    ctx.fillText("A - Ruch w lewo", canvas.width / 2, canvas.height / 2 + 30);
+    ctx.fillText("D - Ruch w prawo", canvas.width / 2, canvas.height / 2 + 60);
+    ctx.fillText("Spacja - Skok", canvas.width / 2, canvas.height / 2 + 90);
+    ctx.fillText("Naciśnij dowolny klawisz, aby rozpocząć", canvas.width / 2, canvas.height / 2 + 150);
+
+    // Dodatkowa informacja o widoczności planszy
+    instructionScreenVisible = true;
+  }
+
+  // Funkcja ukrywająca planszę z instrukcjami
+  function hideInstructionScreen() {
+    instructionScreenVisible = false;
+  }
 
   document.addEventListener("keydown", keyHandler);
   document.addEventListener("keyup", keyHandler);
@@ -78,6 +115,28 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  function startGame() {
+    // Resetuj położenie gracza
+    player.x = 50;
+    player.y = canvas.height - tileSize * 2 - 16;
+
+    // Zainicjalizuj stan gracza
+    player.isJumping = false;
+    player.isMoving = false;
+    player.moveLeft = false;
+    player.moveRight = false;
+    player.fallSpeed = 0;
+
+    // Zresetuj animacje
+    player.currentIdleSpriteIndex = 0;
+    player.lastIdleAnimationTime = 0;
+    player.currentRunSpriteIndex = 0;
+    player.lastRunAnimationTime = 0;
+
+    // Ukryj planszę z instrukcjami
+    hideInstructionScreen();
+  }
+
   for (let i = 0; i < canvas.width / tileSize; i++) {
     squares.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize });
   }
@@ -87,33 +146,38 @@ document.addEventListener("DOMContentLoaded", function () {
 
     ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-    squares.forEach(square => ctx.drawImage(tileset, 0, 0, tileSize, tileSize, square.x, square.y, tileSize, tileSize));
+    // Rysuj planszę z instrukcjami, jeśli widoczna
+    if (instructionScreenVisible) {
+      showInstructionScreen();
+    } else {
+      squares.forEach(square => ctx.drawImage(tileset, 0, 0, tileSize, tileSize, square.x, square.y, tileSize, tileSize));
 
-    player.moveLeft && player.x > 0 && (player.x -= player.speed);
-    player.moveRight && player.x + player.width < canvas.width && (player.x += player.speed);
+      player.moveLeft && player.x > 0 && (player.x -= player.speed);
+      player.moveRight && player.x + player.width < canvas.width && (player.x += player.speed);
 
-    squares.forEach(square => {
-      if (checkCollision(player, square)) {
-        player.y = square.y - player.height;
-        player.fallSpeed = 0;
-        player.isJumping = false;
-        if (!player.isMoving) {
-          startIdleAnimation();
+      squares.forEach(square => {
+        if (checkCollision(player, square)) {
+          player.y = square.y - player.height;
+          player.fallSpeed = 0;
+          player.isJumping = false;
+          if (!player.isMoving) {
+            startIdleAnimation();
+          }
         }
-      }
-    });
+      });
 
-    player.y + player.height >= canvas.height && (player.y = canvas.height - player.height, player.fallSpeed = 0, player.isJumping = false, !player.isMoving && startIdleAnimation());
+      player.y + player.height >= canvas.height && (player.y = canvas.height - player.height, player.fallSpeed = 0, player.isJumping = false, !player.isMoving && startIdleAnimation());
 
-    player.y += player.fallSpeed;
-    player.fallSpeed += 0.1;
+      player.y += player.fallSpeed;
+      player.fallSpeed += 0.1;
 
-    startRunAnimation();
+      startRunAnimation();
 
-    const currentSprites = player.isMoving ? (player.moveRight ? player.runSpritesRight : player.runSpritesLeft) : player.idleSprites;
-    const currentSpriteIndex = player.isMoving ? player.currentRunSpriteIndex : player.currentIdleSpriteIndex;
+      const currentSprites = player.isMoving ? (player.moveRight ? player.runSpritesRight : player.runSpritesLeft) : player.idleSprites;
+      const currentSpriteIndex = player.isMoving ? player.currentRunSpriteIndex : player.currentIdleSpriteIndex;
 
-    ctx.drawImage(currentSprites[currentSpriteIndex], player.x, player.y, player.width, player.height);
+      ctx.drawImage(currentSprites[currentSpriteIndex], player.x, player.y, player.width, player.height);
+    }
 
     requestAnimationFrame(draw);
   }
