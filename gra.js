@@ -37,13 +37,17 @@ document.addEventListener("DOMContentLoaded", function () {
   var score = 0;
   var lives = 3;
 
-  function Rectangle() {
-    this.width = 16;
-    this.height = 16;
-    this.x = Math.random() * canvas.width;
-    this.y = 0;
-    this.speed = 2;
-  }
+function Rectangle() {
+  this.width = 16;
+  this.height = 16;
+  this.x = Math.random() * canvas.width;
+  this.y = 0;
+  this.speed = 2; 
+
+ 
+  this.image = new Image();
+  this.image.src = "images/eye/spriteeye_0.png";
+}
 
   function loadSprites(spriteSet, prefix) {
     return spriteSet.map((sprite, index) => Object.assign(new Image(), { src: "images/" + prefix + index + ".png" }));
@@ -98,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (keys[e.key] !== undefined) {
       player[keys[e.key]] = e.type === "keydown";
       player.isMoving = player.moveLeft || player.moveRight;
-      if (keys[e.key] === "jump" && !player.isJumping) {
+      if (keys[e.key] === "jump" && !player.isJumping && player.y + player.height >= canvas.height) {
         player.isJumping = true;
         player.fallSpeed = -player.jumpForce;
       }
@@ -133,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
     player.currentRunSpriteIndex = 0;
     player.lastRunAnimationTime = 0;
 
-    rectangles = []; // Resetujemy prostokąty przy rozpoczęciu nowej gry
+    rectangles = [];
 
     hideInstructionScreen();
     requestAnimationFrame(draw);
@@ -147,76 +151,64 @@ document.addEventListener("DOMContentLoaded", function () {
     squares.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize });
   }
 
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-    if (instructionScreenVisible) {
-      showInstructionScreen();
-    } else {
-      squares.forEach(square => ctx.drawImage(tileset, 0, 0, tileSize, tileSize, square.x, square.y, tileSize, tileSize));
+  if (instructionScreenVisible) {
+    showInstructionScreen();
+  } else {
+    squares.forEach(square => ctx.drawImage(tileset, 0, 0, tileSize, tileSize, square.x, square.y, tileSize, tileSize));
 
-      // Rysuj prostokąty
-      rectangles.forEach(rectangle => {
-        ctx.fillStyle = "#FF0000";
-        ctx.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+    rectangles.forEach(rectangle => {
+      // Rysuj obrazek zamiast prostokąta
+      ctx.drawImage(rectangle.image, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 
-        // Aktualizuj pozycję prostokąta
-        rectangle.y += rectangle.speed;
+      rectangle.y += rectangle.speed;
 
-        // Sprawdź, czy prostokąt dotknął dolnej krawędzi planszy
-        if (rectangle.y + rectangle.height >= canvas.height) {
-          // Odejmij życie, gdy prostokąt dotknie dolnej krawędzi
-          lives--;
-          // Usuń prostokąty, które dotarły do dolnej krawędzi
-          rectangles.splice(rectangles.indexOf(rectangle), 1);
-        }
-
-        // Sprawdzanie kolizji z graczem
-        if (checkCollision(player, rectangle)) {
-          // Dodaj punkt, gdy gracz dotknie prostokąta
-          score++;
-          rectangles.splice(rectangles.indexOf(rectangle), 1);
-        }
-      });
-
-      player.moveLeft && player.x > 0 && (player.x -= player.speed);
-      player.moveRight && player.x + player.width < canvas.width && (player.x += player.speed);
-
-      squares.forEach(square => {
-        if (checkCollision(player, square)) {
-          player.y = square.y - player.height;
-          player.fallSpeed = 0;
-          player.isJumping = false;
-          if (!player.isMoving) {
-            startIdleAnimation();
-          }
-        }
-      });
-
-      // Sprawdzenie kolizji z prostokątami
-      rectangles.forEach(rectangle => {
-        if (checkCollision(player, rectangle)) {
-          // Gracz zdobywa punkt, a prostokąt znika
-          score++;
-          rectangles.splice(rectangles.indexOf(rectangle), 1);
-        }
-      });
-
-      // Sprawdź, czy gracz stracił życie
-      if (player.y + player.height >= canvas.height) {
-        // Odejmij życie
+      if (rectangle.y + rectangle.height >= canvas.height) {
         lives--;
+        rectangles.splice(rectangles.indexOf(rectangle), 1);
+      }
 
+      if (checkCollision(player, rectangle)) {
+        score++;
+        rectangles.splice(rectangles.indexOf(rectangle), 1);
+      }
+    });
+
+ 
+
+  player.moveLeft && player.x > 0 && (player.x -= player.speed);
+  player.moveRight && player.x + player.width < canvas.width && (player.x += player.speed);
+
+  squares.forEach(square => {
+    if (checkCollision(player, square)) {
+      player.y = square.y - player.height;
+      player.fallSpeed = 0;
+      player.isJumping = false;
+      if (!player.isMoving) {
+        startIdleAnimation();
+      }
+    }
+  });
+
+      rectangles.forEach(rectangle => {
+        if (checkCollision(player, rectangle)) {
+          score++;
+          rectangles.splice(rectangles.indexOf(rectangle), 1);
+        }
+      });
+
+      if (player.y + player.height >= canvas.height) {
+        lives--;
         player.y = canvas.height - player.height;
         player.fallSpeed = 0;
         player.isJumping = false;
         !player.isMoving && startIdleAnimation();
       }
 
-      // Sprawdź, czy gracz stracił wszystkie życia
       if (lives <= 0) {
-        // Tutaj możesz dodać kod zakończenia gry, na przykład wyświetlić komunikat lub zresetować grę
         resetGame();
       }
 
@@ -231,13 +223,11 @@ document.addEventListener("DOMContentLoaded", function () {
       ctx.drawImage(currentSprites[currentSpriteIndex], player.x, player.y, player.width, player.height);
     }
 
-    // Rysowanie licznika punktów w rogu canvas
     ctx.fillStyle = "#FFF";
     ctx.font = "16px Arial";
     ctx.textAlign = "right";
     ctx.fillText("Punkty: " + score, canvas.width - 10, 20);
 
-    // Rysowanie licznika żyć w rogu canvas
     ctx.fillStyle = "#FFF";
     ctx.font = "16px Arial";
     ctx.textAlign = "left";
@@ -246,33 +236,41 @@ document.addEventListener("DOMContentLoaded", function () {
     requestAnimationFrame(draw);
   }
 
-  // Funkcja resetująca grę po zakończeniu
-  function resetGame() {
-    // Przywróć punkty i życia do początkowych wartości
-    score = 0;
-    lives = 3;
-    // Dodaj nowe prostokąty i zresetuj gracza
-    rectangles = [];
-    player.x = 50;
-    player.y = canvas.height - tileSize * 2 - 16;
-    player.isJumping = false;
-    player.isMoving = false;
-    player.moveLeft = false;
-    player.moveRight = false;
-    player.fallSpeed = 0;
-    player.currentIdleSpriteIndex = 0;
-    player.lastIdleAnimationTime = 0;
-    player.currentRunSpriteIndex = 0;
-    player.lastRunAnimationTime = 0;
-    // Ponownie wyświetl planszę z instrukcjami
-    showInstructionScreen();
-  }
+function resetGame() {
+  score = 0;
+  lives = 3;
+  player.speed = 4;
+  player.fallSpeed = 0;
+  player.isJumping = false;
+  player.moveLeft = false;
+  player.moveRight = false;
+  player.isMoving = false;
+  player.currentIdleSpriteIndex = 0;
+  player.lastIdleAnimationTime = 0;
+  player.currentRunSpriteIndex = 0;
+  player.lastRunAnimationTime = 0;
+
+  // Dodaj poniższe linie, aby usunąć zdarzenia klawiszy
+  document.removeEventListener("keydown", keyHandler);
+  document.removeEventListener("keyup", keyHandler);
+
+  // Ponownie dodaj zdarzenia klawiszy
+  document.addEventListener("keydown", keyHandler);
+  document.addEventListener("keyup", keyHandler);
+
+  showInstructionScreen();
+
+  document.addEventListener("keydown", function startGameOnKeyPress() {
+    document.removeEventListener("keydown", startGameOnKeyPress);
+    hideInstructionScreen();
+    startGame();
+  });
+}
 
   tileset.onload = function () {
     // draw();
   };
 
-  // Dodaj nowy prostokąt co określony czas
   setInterval(spawnRectangle, 2000);
 });
 
