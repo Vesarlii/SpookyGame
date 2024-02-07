@@ -17,12 +17,16 @@ document.addEventListener("DOMContentLoaded", function () {
     width: 16,
     height: 32,
     speed: 4,
-    fallSpeed: 0,
-    jumpForce: 4,
-    isJumping: false,
     isMoving: false,
     moveLeft: false,
     moveRight: false,
+    isJumping: false,
+    onGround: true, 
+    jumpHeight: 128,
+    jumpVelocity: 8,
+    jumpSprites: ["sprite_jump0.png", "sprite_jump1.png"],
+    currentJumpSpriteIndex: 0,
+    lastJumpAnimationTime: 0,
     idleSprites: ["sprite_idle0.png", "sprite_idle1.png", "sprite_idle2.png", "sprite_idle3.png"],
     runSpritesRight: ["spriterun_0.png", "spriterun_1.png", "spriterun_2.png", "spriterun_3.png", "spriterun_4.png", "spriterun_5.png", "spriterun_6.png", "spriterun_7.png"],
     runSpritesLeft: ["spriterunleft_0.png", "spriterunleft_1.png", "spriterunleft_2.png", "spriterunleft_3.png", "spriterunleft_4.png", "spriterunleft_5.png", "spriterunleft_6.png", "spriterunleft_7.png"],
@@ -37,17 +41,16 @@ document.addEventListener("DOMContentLoaded", function () {
   var score = 0;
   var lives = 3;
 
-function Rectangle() {
-  this.width = 16;
-  this.height = 16;
-  this.x = Math.random() * canvas.width;
-  this.y = 0;
-  this.speed = 2; 
+  function Rectangle() {
+    this.width = 16;
+    this.height = 16;
+    this.x = Math.random() * canvas.width;
+    this.y = 0;
+    this.speed = 2;
 
- 
-  this.image = new Image();
-  this.image.src = "images/eye/spriteeye_0.png";
-}
+    this.image = new Image();
+    this.image.src = "images/eye/spriteeye_0.png";
+  }
 
   function loadSprites(spriteSet, prefix) {
     return spriteSet.map((sprite, index) => Object.assign(new Image(), { src: "images/" + prefix + index + ".png" }));
@@ -62,15 +65,22 @@ function Rectangle() {
     player.runSpritesLeft = loadSprites(player.runSpritesLeft, "run_left/spriterunleft_");
   }
 
+  function loadJumpSprites() {
+    player.jumpSprites = loadSprites(player.jumpSprites, "Jump/sprite_jump");
+  }
+
   loadIdleSprites();
   loadRunSprites();
+  loadJumpSprites();
 
   showInstructionScreen();
 
-  document.addEventListener("keydown", function startGameOnKeyPress() {
-    document.removeEventListener("keydown", startGameOnKeyPress);
-    hideInstructionScreen();
-    startGame();
+  document.addEventListener("keydown", function startGameOnKeyPress(e) {
+    if (e.key !== " ") {
+      document.removeEventListener("keydown", startGameOnKeyPress);
+      hideInstructionScreen();
+      startGame();
+    }
   });
 
   function showInstructionScreen() {
@@ -100,11 +110,14 @@ function Rectangle() {
   function keyHandler(e) {
     const keys = { "a": "moveLeft", "d": "moveRight", " ": "jump" };
     if (keys[e.key] !== undefined) {
-      player[keys[e.key]] = e.type === "keydown";
-      player.isMoving = player.moveLeft || player.moveRight;
-      if (keys[e.key] === "jump" && !player.isJumping && player.y + player.height >= canvas.height) {
-        player.isJumping = true;
-        player.fallSpeed = -player.jumpForce;
+      if (e.key === " ") {
+        if (!player.isJumping && player.onGround) { 
+          player.isJumping = true;
+          player.onGround = false;
+        }
+      } else {
+        player[keys[e.key]] = e.type === "keydown";
+        player.isMoving = player.moveLeft || player.moveRight;
       }
     }
   }
@@ -124,18 +137,29 @@ function Rectangle() {
     }
   }
 
+  function startJumpAnimation() {
+    if (player.isJumping) {
+      if ((Date.now() - player.lastJumpAnimationTime) > 200) {
+        player.currentJumpSpriteIndex = (player.currentJumpSpriteIndex + 1) % player.jumpSprites.length;
+        player.lastJumpAnimationTime = Date.now();
+      }
+    }
+  }
+
   function startGame() {
     player.x = 50;
     player.y = canvas.height - tileSize * 2 - 16;
-    player.isJumping = false;
     player.isMoving = false;
     player.moveLeft = false;
     player.moveRight = false;
-    player.fallSpeed = 0;
+    player.isJumping = false;
+    player.onGround = true; 
     player.currentIdleSpriteIndex = 0;
     player.lastIdleAnimationTime = 0;
     player.currentRunSpriteIndex = 0;
     player.lastRunAnimationTime = 0;
+    player.currentJumpSpriteIndex = 0;
+    player.lastJumpAnimationTime = 0;
 
     rectangles = [];
 
@@ -151,47 +175,62 @@ function Rectangle() {
     squares.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize });
   }
 
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-  if (instructionScreenVisible) {
-    showInstructionScreen();
-  } else {
-    squares.forEach(square => ctx.drawImage(tileset, 0, 0, tileSize, tileSize, square.x, square.y, tileSize, tileSize));
+    if (instructionScreenVisible) {
+      showInstructionScreen();
+    } else {
+      squares.forEach(square => ctx.drawImage(tileset, 0, 0, tileSize, tileSize, square.x, square.y, tileSize, tileSize));
 
-    rectangles.forEach(rectangle => {
-      // Rysuj obrazek zamiast prostokąta
-      ctx.drawImage(rectangle.image, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+      rectangles.forEach(rectangle => {
+        ctx.drawImage(rectangle.image, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 
-      rectangle.y += rectangle.speed;
+        rectangle.y += rectangle.speed;
 
-      if (rectangle.y + rectangle.height >= canvas.height) {
-        lives--;
-        rectangles.splice(rectangles.indexOf(rectangle), 1);
+        if (rectangle.y + rectangle.height >= canvas.height) {
+          lives--;
+          rectangles.splice(rectangles.indexOf(rectangle), 1);
+        }
+
+        if (checkCollision(player, rectangle)) {
+          score++;
+          rectangles.splice(rectangles.indexOf(rectangle), 1);
+        }
+      });
+
+      // Animacja skoku
+      startJumpAnimation();
+
+      // Skok
+      if (player.isJumping) {
+        player.y -= player.jumpVelocity;
+
+        if (player.y <= canvas.height - player.jumpHeight) {
+          player.isJumping = false;
+        }
+      } else {
+        // Grawitacja
+        if (player.y < canvas.height - tileSize * 2 - 16) {
+          player.y += player.jumpVelocity;
+        } else {
+          player.onGround = true; // Ustawienie na ziemi, gdy dotknie podłoża
+        }
       }
 
-      if (checkCollision(player, rectangle)) {
-        score++;
-        rectangles.splice(rectangles.indexOf(rectangle), 1);
-      }
-    });
+      player.moveLeft && player.x > 0 && (player.x -= player.speed);
+      player.moveRight && player.x + player.width < canvas.width && (player.x += player.speed);
 
- 
-
-  player.moveLeft && player.x > 0 && (player.x -= player.speed);
-  player.moveRight && player.x + player.width < canvas.width && (player.x += player.speed);
-
-  squares.forEach(square => {
-    if (checkCollision(player, square)) {
-      player.y = square.y - player.height;
-      player.fallSpeed = 0;
-      player.isJumping = false;
-      if (!player.isMoving) {
-        startIdleAnimation();
-      }
-    }
-  });
+      squares.forEach(square => {
+        if (checkCollision(player, square)) {
+          player.y = square.y - player.height;
+          if (!player.isMoving) {
+            startIdleAnimation();
+          }
+          player.onGround = true; // Ustawienie na ziemi, gdy dotknie podłoża
+        }
+      });
 
       rectangles.forEach(rectangle => {
         if (checkCollision(player, rectangle)) {
@@ -200,25 +239,14 @@ function draw() {
         }
       });
 
-      if (player.y + player.height >= canvas.height) {
-        lives--;
-        player.y = canvas.height - player.height;
-        player.fallSpeed = 0;
-        player.isJumping = false;
-        !player.isMoving && startIdleAnimation();
-      }
-
       if (lives <= 0) {
         resetGame();
       }
 
-      player.y += player.fallSpeed;
-      player.fallSpeed += 0.1;
-
       startRunAnimation();
 
-      const currentSprites = player.isMoving ? (player.moveRight ? player.runSpritesRight : player.runSpritesLeft) : player.idleSprites;
-      const currentSpriteIndex = player.isMoving ? player.currentRunSpriteIndex : player.currentIdleSpriteIndex;
+      const currentSprites = player.isMoving ? (player.moveRight ? player.runSpritesRight : player.runSpritesLeft) : (player.isJumping ? player.jumpSprites : player.idleSprites);
+      const currentSpriteIndex = player.isMoving ? player.currentRunSpriteIndex : (player.isJumping ? player.currentJumpSpriteIndex : player.currentIdleSpriteIndex);
 
       ctx.drawImage(currentSprites[currentSpriteIndex], player.x, player.y, player.width, player.height);
     }
@@ -236,36 +264,38 @@ function draw() {
     requestAnimationFrame(draw);
   }
 
-function resetGame() {
-  score = 0;
-  lives = 3;
-  player.speed = 4;
-  player.fallSpeed = 0;
-  player.isJumping = false;
-  player.moveLeft = false;
-  player.moveRight = false;
-  player.isMoving = false;
-  player.currentIdleSpriteIndex = 0;
-  player.lastIdleAnimationTime = 0;
-  player.currentRunSpriteIndex = 0;
-  player.lastRunAnimationTime = 0;
+  function resetGame() {
+    score = 0;
+    lives = 3;
+    player.speed = 4;
+    player.isMoving = false;
+    player.moveLeft = false;
+    player.moveRight = false;
+    player.isJumping = false;
+    player.onGround = true; 
+    player.currentIdleSpriteIndex = 0;
+    player.lastIdleAnimationTime = 0;
+    player.currentRunSpriteIndex = 0;
+    player.lastRunAnimationTime = 0;
+    player.currentJumpSpriteIndex = 0;
+    player.lastJumpAnimationTime = 0;
 
-  // Dodaj poniższe linie, aby usunąć zdarzenia klawiszy
-  document.removeEventListener("keydown", keyHandler);
-  document.removeEventListener("keyup", keyHandler);
+    document.removeEventListener("keydown", keyHandler);
+    document.removeEventListener("keyup", keyHandler);
 
-  // Ponownie dodaj zdarzenia klawiszy
-  document.addEventListener("keydown", keyHandler);
-  document.addEventListener("keyup", keyHandler);
+    document.addEventListener("keydown", keyHandler);
+    document.addEventListener("keyup", keyHandler);
 
-  showInstructionScreen();
+    showInstructionScreen();
 
-  document.addEventListener("keydown", function startGameOnKeyPress() {
-    document.removeEventListener("keydown", startGameOnKeyPress);
-    hideInstructionScreen();
-    startGame();
-  });
-}
+    document.addEventListener("keydown", function startGameOnKeyPress(e) {
+      if (e.key !== " ") {
+        document.removeEventListener("keydown", startGameOnKeyPress);
+        hideInstructionScreen();
+        startGame();
+      }
+    });
+  }
 
   tileset.onload = function () {
     // draw();
