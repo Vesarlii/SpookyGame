@@ -9,6 +9,9 @@ document.addEventListener("DOMContentLoaded", function () {
   var background = new Image();
   background.src = "images/background.png";
 
+  var hpImage = new Image(); // Dodane: obraz życia
+  hpImage.src = "images/HP/hp.png"; // Dodane: ścieżka do obrazu życia
+
   var instructionScreenVisible = false;
 
   var player = {
@@ -21,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
     moveLeft: false,
     moveRight: false,
     isJumping: false,
-    onGround: true, 
+    onGround: true,
     jumpHeight: 128,
     jumpVelocity: 8,
     jumpSprites: ["sprite_jump0.png", "sprite_jump1.png"],
@@ -69,9 +72,17 @@ document.addEventListener("DOMContentLoaded", function () {
     player.jumpSprites = loadSprites(player.jumpSprites, "Jump/sprite_jump");
   }
 
+  function loadHpSprites() {
+    for (let i = 1; i <= 3; i++) {
+      let hpLifeImage = new Image();
+      hpLifeImage.src = `images/HP/hp_${i}.png`;
+    }
+  }
+
   loadIdleSprites();
   loadRunSprites();
   loadJumpSprites();
+  loadHpSprites();
 
   showInstructionScreen();
 
@@ -111,7 +122,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const keys = { "a": "moveLeft", "d": "moveRight", " ": "jump" };
     if (keys[e.key] !== undefined) {
       if (e.key === " ") {
-        if (!player.isJumping && player.onGround) { 
+        if (!player.isJumping && player.onGround) {
           player.isJumping = true;
           player.onGround = false;
         }
@@ -153,7 +164,7 @@ document.addEventListener("DOMContentLoaded", function () {
     player.moveLeft = false;
     player.moveRight = false;
     player.isJumping = false;
-    player.onGround = true; 
+    player.onGround = true;
     player.currentIdleSpriteIndex = 0;
     player.lastIdleAnimationTime = 0;
     player.currentRunSpriteIndex = 0;
@@ -200,10 +211,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
 
-      // Animacja skoku
       startJumpAnimation();
 
-      // Skok
       if (player.isJumping) {
         player.y -= player.jumpVelocity;
 
@@ -211,11 +220,10 @@ document.addEventListener("DOMContentLoaded", function () {
           player.isJumping = false;
         }
       } else {
-        // Grawitacja
         if (player.y < canvas.height - tileSize * 2 - 16) {
           player.y += player.jumpVelocity;
         } else {
-          player.onGround = true; // Ustawienie na ziemi, gdy dotknie podłoża
+          player.onGround = true;
         }
       }
 
@@ -228,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
           if (!player.isMoving) {
             startIdleAnimation();
           }
-          player.onGround = true; // Ustawienie na ziemi, gdy dotknie podłoża
+          player.onGround = true;
         }
       });
 
@@ -272,7 +280,7 @@ document.addEventListener("DOMContentLoaded", function () {
     player.moveLeft = false;
     player.moveRight = false;
     player.isJumping = false;
-    player.onGround = true; 
+    player.onGround = true;
     player.currentIdleSpriteIndex = 0;
     player.lastIdleAnimationTime = 0;
     player.currentRunSpriteIndex = 0;
