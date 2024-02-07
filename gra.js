@@ -9,10 +9,11 @@ document.addEventListener("DOMContentLoaded", function () {
   var background = new Image();
   background.src = "images/background.png";
 
-  var hpImage = new Image(); // Dodane: obraz życia
-  hpImage.src = "images/HP/hp.png"; // Dodane: ścieżka do obrazu życia
+  var hpImage = new Image();
+  hpImage.src = "images/HP/zycie.png";
 
   var instructionScreenVisible = false;
+  var gameOver = false;
 
   var player = {
     x: 50,
@@ -73,9 +74,37 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function loadHpSprites() {
+    const hpContainer = document.createElement('div');
+    hpContainer.style.display = 'flex';
+
     for (let i = 1; i <= 3; i++) {
       let hpLifeImage = new Image();
-      hpLifeImage.src = `images/HP/hp_${i}.png`;
+      hpLifeImage.src = "images/HP/zycie.png";
+      hpLifeImage.width = 16;
+      hpLifeImage.height = 16;
+      hpContainer.appendChild(hpLifeImage);
+    }
+
+    document.body.appendChild(hpContainer);
+    document.body.appendChild(document.createTextNode("Życia: "));
+  }
+
+  function draw(lives) {
+    if (lives >= 1 && lives <= 3) {
+      const container = document.createElement('div');
+      container.style.display = 'flex';
+
+      for (let i = 0; i < lives; i++) {
+        const img = document.createElement('img');
+        img.src = "images/HP/zycie.png";
+        img.width = 16;
+        img.height = 16;
+        container.appendChild(img);
+      }
+
+      document.body.appendChild(container);
+    } else {
+      console.error("Nieprawidłowa liczba żyć. Wprowadź liczbę od 1 do 3.");
     }
   }
 
@@ -173,6 +202,7 @@ document.addEventListener("DOMContentLoaded", function () {
     player.lastJumpAnimationTime = 0;
 
     rectangles = [];
+    gameOver = false;
 
     hideInstructionScreen();
     requestAnimationFrame(draw);
@@ -192,6 +222,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (instructionScreenVisible) {
       showInstructionScreen();
+    } else if (gameOver) {
+      showGameOverScreen();
     } else {
       squares.forEach(square => ctx.drawImage(tileset, 0, 0, tileSize, tileSize, square.x, square.y, tileSize, tileSize));
 
@@ -248,7 +280,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       if (lives <= 0) {
-        resetGame();
+        gameOver = true;
       }
 
       startRunAnimation();
@@ -257,19 +289,28 @@ document.addEventListener("DOMContentLoaded", function () {
       const currentSpriteIndex = player.isMoving ? player.currentRunSpriteIndex : (player.isJumping ? player.currentJumpSpriteIndex : player.currentIdleSpriteIndex);
 
       ctx.drawImage(currentSprites[currentSpriteIndex], player.x, player.y, player.width, player.height);
+
+      for (let i = 0; i < lives; i++) {
+        ctx.drawImage(hpImage, 10 + i * 20, 5, 16, 16);
+      }
+
+      ctx.textAlign = "right";
+      ctx.fillText("Punkty: " + score, canvas.width - 10, 20);
     }
 
-    ctx.fillStyle = "#FFF";
-    ctx.font = "16px Arial";
-    ctx.textAlign = "right";
-    ctx.fillText("Punkty: " + score, canvas.width - 10, 20);
-
-    ctx.fillStyle = "#FFF";
-    ctx.font = "16px Arial";
-    ctx.textAlign = "left";
-    ctx.fillText("Życia: " + lives, 10, 20);
-
     requestAnimationFrame(draw);
+  }
+
+  function showGameOverScreen() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#fff";
+    ctx.font = "30px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Koniec gry - Przegrałeś", canvas.width / 2, canvas.height / 2 - 30);
+    ctx.fillText("Twój wynik: " + score, canvas.width / 2, canvas.height / 2);
+    ctx.fillText("Naciśnij 'SPACJĘ' aby zacząć jeszcze raz", canvas.width / 2, canvas.height / 2 + 60);
+    ctx.fillText("Naciśnij 'S' aby zapisać wynik", canvas.width / 2, canvas.height / 2 + 90);
   }
 
   function resetGame() {
@@ -305,9 +346,34 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  tileset.onload = function () {
-    // draw();
-  };
+  function showGameOverScreen() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#fff";
+    ctx.font = "30px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Koniec gry - Przegrałeś", canvas.width / 2, canvas.height / 2 - 30);
+    ctx.fillText("Twój wynik: " + score, canvas.width / 2, canvas.height / 2);
+    ctx.fillText("Naciśnij 'SPACJĘ' aby zacząć jeszcze raz", canvas.width / 2, canvas.height / 2 + 60);
+    ctx.fillText("Naciśnij 'S' aby zapisać wynik", canvas.width / 2, canvas.height / 2 + 90);
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if (gameOver && e.key === " ") {
+      resetGame();
+    }
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (gameOver && e.key === "s") {
+      saveScore();
+    }
+  });
+
+  function saveScore() {
+    // Logika zapisywania wyniku
+    console.log("Zapisano wynik: " + score);
+  }
 
   setInterval(spawnRectangle, 2000);
 });
