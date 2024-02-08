@@ -21,6 +21,12 @@ canvas {
 }
 
 
+#tab {
+	margin-top: 1500px;
+	background-color:grey;
+}
+
+
 #imageContainer {
 	position: absolute;
 	top: 0;

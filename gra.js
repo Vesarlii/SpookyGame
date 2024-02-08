@@ -371,8 +371,12 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   function saveScore() {
-    // Logika zapisywania wyniku
-    console.log("Zapisano wynik: " + score);
+    const playerName = prompt("Podaj swoje imię:");
+    if (playerName) {
+      const scoreEntry = document.createElement("tr");
+      scoreEntry.innerHTML = `<td></td><td>${playerName}</td><td>${score}</td>`;
+      document.getElementById("scoreTableBody").appendChild(scoreEntry);
+    }
   }
 
   setInterval(spawnRectangle, 2000);
