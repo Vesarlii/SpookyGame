@@ -10,7 +10,7 @@ body {
 
 #canvasContainer {
 	position: absolute;
-	top: 70%;
+	top: 60%;
 	transform: translateY(-60%);
 	z-index: 1;
 }
@@ -22,8 +22,15 @@ canvas {
 
 
 #tab {
-	margin-top: 1500px;
+	margin-top: 1400px;
 	background-color:grey;
+}
+
+#winners {
+	margin-top: 1200px;
+	position:absolute;
+	transform: translateY(-60%);
+
 }
 
 

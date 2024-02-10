@@ -310,10 +310,8 @@ function draw() {
       }
     }
 
-    if (lives > 0) {
-      player.moveLeft && player.x > 0 && (player.x -= player.speed);
-      player.moveRight && player.x + player.width < canvas.width && (player.x += player.speed);
-    }
+    player.moveLeft && player.x > 0 && (player.x -= player.speed);
+    player.moveRight && player.x + player.width < canvas.width && (player.x += player.speed);
 
     squares.forEach(square => {
       if (checkCollision(player, square)) {
@@ -348,25 +346,12 @@ function draw() {
 
       ctx.textAlign = "right";
       ctx.fillText("Punkty: " + score, canvas.width - 10, 20);
-
-      // Wyświetlanie stworzenia w tle po zdobyciu punktów
-      if (score >= 1 && score <= 15) {
-        const creatureImage = new Image();
-        let spriteNumber = (score < 10) ? `0${score}` : score;
-        let spritePath = `images/Creature/uprising/sprite_creature${spriteNumber}.png`;
-
-        creatureImage.src = spritePath;
-
-        const middleSquareIndex = Math.floor(squares.length / 2);
-        const middleSquare = squares[middleSquareIndex];
-
-        ctx.drawImage(creatureImage, middleSquare.x, middleSquare.y - 64, 64, 64);
-      }
     }
 
     requestAnimationFrame(draw);
   }
 }
+
 
   function showGameOverScreen() {
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
