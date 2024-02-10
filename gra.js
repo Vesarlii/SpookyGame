@@ -216,90 +216,117 @@ document.addEventListener("DOMContentLoaded", function () {
     squares.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize });
   }
 
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-    if (instructionScreenVisible) {
-      showInstructionScreen();
-    } else if (gameOver) {
-      showGameOverScreen();
+  if (instructionScreenVisible) {
+    showInstructionScreen();
+  } else if (gameOver) {
+    showGameOverScreen();
+  } else {
+    squares.forEach(square => ctx.drawImage(tileset, 0, 0, tileSize, tileSize, square.x, square.y, tileSize, tileSize));
+
+    rectangles.forEach(rectangle => {
+      ctx.drawImage(rectangle.image, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+
+      rectangle.y += rectangle.speed;
+
+      if (rectangle.y + rectangle.height >= canvas.height) {
+        lives--;
+        rectangles.splice(rectangles.indexOf(rectangle), 1);
+      }
+
+      if (checkCollision(player, rectangle)) {
+        score++;
+        rectangles.splice(rectangles.indexOf(rectangle), 1);
+      }
+    });
+
+    startJumpAnimation();
+
+    if (player.isJumping) {
+      player.y -= player.jumpVelocity;
+
+      if (player.y <= canvas.height - player.jumpHeight) {
+        player.isJumping = false;
+      }
     } else {
-      squares.forEach(square => ctx.drawImage(tileset, 0, 0, tileSize, tileSize, square.x, square.y, tileSize, tileSize));
-
-      rectangles.forEach(rectangle => {
-        ctx.drawImage(rectangle.image, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-
-        rectangle.y += rectangle.speed;
-
-        if (rectangle.y + rectangle.height >= canvas.height) {
-          lives--;
-          rectangles.splice(rectangles.indexOf(rectangle), 1);
-        }
-
-        if (checkCollision(player, rectangle)) {
-          score++;
-          rectangles.splice(rectangles.indexOf(rectangle), 1);
-        }
-      });
-
-      startJumpAnimation();
-
-      if (player.isJumping) {
-        player.y -= player.jumpVelocity;
-
-        if (player.y <= canvas.height - player.jumpHeight) {
-          player.isJumping = false;
-        }
+      if (player.y < canvas.height - tileSize * 2 - 16) {
+        player.y += player.jumpVelocity;
       } else {
-        if (player.y < canvas.height - tileSize * 2 - 16) {
-          player.y += player.jumpVelocity;
-        } else {
-          player.onGround = true;
-        }
+        player.onGround = true;
       }
-
-      player.moveLeft && player.x > 0 && (player.x -= player.speed);
-      player.moveRight && player.x + player.width < canvas.width && (player.x += player.speed);
-
-      squares.forEach(square => {
-        if (checkCollision(player, square)) {
-          player.y = square.y - player.height;
-          if (!player.isMoving) {
-            startIdleAnimation();
-          }
-          player.onGround = true;
-        }
-      });
-
-      rectangles.forEach(rectangle => {
-        if (checkCollision(player, rectangle)) {
-          score++;
-          rectangles.splice(rectangles.indexOf(rectangle), 1);
-        }
-      });
-
-      if (lives <= 0) {
-        gameOver = true;
-      }
-
-      startRunAnimation();
-
-      const currentSprites = player.isMoving ? (player.moveRight ? player.runSpritesRight : player.runSpritesLeft) : (player.isJumping ? player.jumpSprites : player.idleSprites);
-      const currentSpriteIndex = player.isMoving ? player.currentRunSpriteIndex : (player.isJumping ? player.currentJumpSpriteIndex : player.currentIdleSpriteIndex);
-
-      ctx.drawImage(currentSprites[currentSpriteIndex], player.x, player.y, player.width, player.height);
-
-      for (let i = 0; i < lives; i++) {
-        ctx.drawImage(hpImage, 10 + i * 20, 5, 16, 16);
-      }
-
-      ctx.textAlign = "right";
-      ctx.fillText("Punkty: " + score, canvas.width - 10, 20);
     }
 
-    requestAnimationFrame(draw);
+    player.moveLeft && player.x > 0 && (player.x -= player.speed);
+    player.moveRight && player.x + player.width < canvas.width && (player.x += player.speed);
+
+    squares.forEach(square => {
+      if (checkCollision(player, square)) {
+        player.y = square.y - player.height;
+        if (!player.isMoving) {
+          startIdleAnimation();
+        }
+        player.onGround = true;
+      }
+    });
+
+    rectangles.forEach(rectangle => {
+      if (checkCollision(player, rectangle)) {
+        score++;
+        rectangles.splice(rectangles.indexOf(rectangle), 1);
+      }
+    });
+
+    if (lives <= 0) {
+      gameOver = true;
+    }
+
+    startRunAnimation();
+
+    const currentSprites = player.isMoving ? (player.moveRight ? player.runSpritesRight : player.runSpritesLeft) : (player.isJumping ? player.jumpSprites : player.idleSprites);
+    const currentSpriteIndex = player.isMoving ? player.currentRunSpriteIndex : (player.isJumping ? player.currentJumpSpriteIndex : player.currentIdleSpriteIndex);
+
+   
+if (score >= 1 && score <= 15) {
+  const creatureImage = new Image();
+  let spriteNumber = (score < 10) ? `0${score}` : score;
+  let spritePath = `images/Creature/uprising/sprite_creature${spriteNumber}.png`;
+
+  creatureImage.src = spritePath;
+
+
+  const middleSquareIndex = Math.floor(squares.length / 2);
+  const middleSquare = squares[middleSquareIndex];
+
+  ctx.drawImage(creatureImage, middleSquare.x, middleSquare.y - 64, 64, 64);
+} else {
+
+  const creatureImage = new Image();
+  creatureImage.src = "images/Creature/uprising/sprite_creature00.png";
+
+
+  const middleSquareIndex = Math.floor(squares.length / 2);
+  const middleSquare = squares[middleSquareIndex];
+
+  ctx.drawImage(creatureImage, middleSquare.x, middleSquare.y - 64, 64, 64);
+}
+
+
+    ctx.drawImage(currentSprites[currentSpriteIndex], player.x, player.y, player.width, player.height);
+
+    for (let i = 0; i < lives; i++) {
+      ctx.drawImage(hpImage, 10 + i * 20, 5, 16, 16);
+    }
+
+    ctx.textAlign = "right";
+    ctx.fillText("Punkty: " + score, canvas.width - 10, 20);
   }
+
+  requestAnimationFrame(draw);
+}
+
 
   function showGameOverScreen() {
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
