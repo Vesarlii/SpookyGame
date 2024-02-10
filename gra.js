@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
     currentJumpSpriteIndex: 0,
     lastJumpAnimationTime: 0,
     idleSprites: ["sprite_idle0.png", "sprite_idle1.png", "sprite_idle2.png", "sprite_idle3.png"],
-    runSpritesRight: ["spriteRun_0.png", "spriteRun_1.png", "spriteRun_2.png", "spriteRun_3.png", "spriteRun_4.png", "spriteRun_5.png", "spriteRun_6.png", "spriteRun_7.png"],
+    runSpritesRight: ["spriterun_0.png", "spriterun_1.png", "spriterun_2.png", "spriterun_3.png", "spriterun_4.png", "spriterun_5.png", "spriterun_6.png", "spriterun_7.png"],
     runSpritesLeft: ["spriterunleft_0.png", "spriterunleft_1.png", "spriterunleft_2.png", "spriterunleft_3.png", "spriterunleft_4.png", "spriterunleft_5.png", "spriterunleft_6.png", "spriterunleft_7.png"],
     currentRunSpriteIndex: 0,
     lastRunAnimationTime: 0,
