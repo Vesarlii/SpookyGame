@@ -223,7 +223,7 @@ function draw() {
   if (instructionScreenVisible) {
     showInstructionScreen();
   } else if (gameOver) {
-    showGameOverScreen();
+	 setTimeout(showGameOverScreen(), 3000);
   } else {
     squares.forEach(square => ctx.drawImage(tileset, 0, 0, tileSize, tileSize, square.x, square.y, tileSize, tileSize));
 
@@ -373,17 +373,7 @@ if (score >= 1 && score <= 15) {
     });
   }
 
-  function showGameOverScreen() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#fff";
-    ctx.font = "30px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("Koniec gry - Przegrałeś", canvas.width / 2, canvas.height / 2 - 30);
-    ctx.fillText("Twój wynik: " + score, canvas.width / 2, canvas.height / 2);
-    ctx.fillText("Naciśnij 'SPACJĘ' aby zacząć jeszcze raz", canvas.width / 2, canvas.height / 2 + 60);
-    ctx.fillText("Naciśnij 'S' aby zapisać wynik", canvas.width / 2, canvas.height / 2 + 90);
-  }
+
 
   document.addEventListener("keydown", function (e) {
     if (gameOver && e.key === " ") {
