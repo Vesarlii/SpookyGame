@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
   background.src = "images/background.png";
 
   var hpImage = new Image();
-  hpImage.src = "images/HP/zycie.png";
+  hpImage.src = "images/hp/zycie.png";
 
   var instructionScreenVisible = false;
   var gameOver = false;
@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function loadJumpSprites() {
-    player.jumpSprites = loadSprites(player.jumpSprites, "Jump/sprite_jump");
+    player.jumpSprites = loadSprites(player.jumpSprites, "jump/sprite_jump");
   }
 
   function loadHpSprites() {
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     for (let i = 1; i <= 3; i++) {
       let hpLifeImage = new Image();
-      hpLifeImage.src = "images/HP/zycie.png";
+      hpLifeImage.src = "images/hp/zycie.png";
       hpLifeImage.width = 16;
       hpLifeImage.height = 16;
       hpContainer.appendChild(hpLifeImage);
@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       for (let i = 0; i < lives; i++) {
         const img = document.createElement('img');
-        img.src = "images/HP/zycie.png";
+        img.src = "images/hp/zycie.png";
         img.width = 16;
         img.height = 16;
         container.appendChild(img);
@@ -223,7 +223,7 @@ function draw() {
   if (instructionScreenVisible) {
     showInstructionScreen();
   } else if (gameOver) {
-	 setTimeout(showGameOverScreen(), 3000);
+	 showGameOverScreen();
   } else {
     squares.forEach(square => ctx.drawImage(tileset, 0, 0, tileSize, tileSize, square.x, square.y, tileSize, tileSize));
 
@@ -292,7 +292,7 @@ function draw() {
 if (score >= 1 && score <= 15) {
   const creatureImage = new Image();
   let spriteNumber = (score < 10) ? `0${score}` : score;
-  let spritePath = `images/Creature/uprising/sprite_creature${spriteNumber}.png`;
+  let spritePath = `images/creature/uprising/sprite_creature${spriteNumber}.png`;
 
   creatureImage.src = spritePath;
 
