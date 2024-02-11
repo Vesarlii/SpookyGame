@@ -104,7 +104,7 @@ deathSprites.forEach(function (image) {
   }
 
   function loadJumpSprites() {
-    player.jumpSprites = loadSprites(player.jumpSprites, "Jump/sprite_jump");
+    player.jumpSprites = loadSprites(player.jumpSprites, "jump/sprite_jump");
   }
 
   function loadHpSprites() {
