@@ -79,6 +79,59 @@ deathSprites.forEach(function (image) {
   var deathSpriteIndex = 0;
   var deathAnimationPlayed = false;
   
+function createObject(x, y) {
+  return {
+    x: x,
+    y: y,
+    width: tileSize,
+    height: tileSize,
+    image: (function() {
+      var img = new Image();
+      img.src = "tileset.png";
+      img.onload = function() {
+        console.log("Obrazek tileset załadowany:", img.src);
+      };
+      return img;
+    })()
+  };
+}
+
+var fence = createObject(canvas.width - 64, canvas.height - 32);
+var fence2 = createObject(canvas.width - 80, canvas.height - 32);
+var grave = createObject(canvas.width - 128, canvas.height - 32);
+var cross = createObject(canvas.width - 256, canvas.height - 32);
+var grass = createObject(canvas.width - 272, canvas.height - 32);
+var grass2 = createObject(canvas.width - 96, canvas.height - 32);
+var grass3 = createObject(canvas.width - 160, canvas.height - 32);
+var grass4 = createObject(528, canvas.height - 32);
+var grass5 = createObject(80, canvas.height - 32);
+var grass6 = createObject(176, canvas.height - 32);
+var grass7 = createObject(256, canvas.height - 32);
+var biggrass = createObject(canvas.width - 112, canvas.height - 32);
+var biggrass2 = createObject(canvas.width - 144, canvas.height - 32);
+var biggrass3 = createObject(112, canvas.height - 32);
+var biggrass4 = createObject(160, canvas.height - 32);
+var flower = createObject(144, canvas.height - 32);
+var flower2 = createObject(272, canvas.height - 32);
+var flower3 = createObject(512, canvas.height - 32);
+var flower4 = createObject(672, canvas.height - 32);
+
+
+function drawImageWithOffset(imageObj, offsetX, offsetY) {
+  ctx.drawImage(
+    imageObj.image,
+    offsetX,
+    offsetY,
+    tileSize,
+    tileSize,
+    imageObj.x,
+    imageObj.y,
+    tileSize,
+    tileSize
+  );
+}
+
+
   
     var bugSprites = loadSprites([...Array(6).keys()], "bug/run/sprite_bug");
   var bug = {
@@ -303,6 +356,27 @@ function draw() {
         rectangles.splice(rectangles.indexOf(rectangle), 1);
       }
     });
+	
+
+drawImageWithOffset(fence, 16, 128);
+drawImageWithOffset(fence2, 16, 128);
+drawImageWithOffset(grave, 32, 128);
+drawImageWithOffset(cross, 48, 128);
+drawImageWithOffset(grass, 32, 80);
+drawImageWithOffset(grass2, 32, 80);
+drawImageWithOffset(grass3, 32, 80);
+drawImageWithOffset(grass4, 32, 80);
+drawImageWithOffset(grass5, 32, 80);
+drawImageWithOffset(grass6, 32, 80);
+drawImageWithOffset(grass7, 32, 80);
+drawImageWithOffset(biggrass, 48, 80);
+drawImageWithOffset(biggrass2, 48, 80);
+drawImageWithOffset(biggrass3, 48, 80);
+drawImageWithOffset(biggrass4, 48, 80);
+drawImageWithOffset(flower, 64, 80);
+drawImageWithOffset(flower2, 64, 80);
+drawImageWithOffset(flower3, 64, 80);
+drawImageWithOffset(flower4, 64, 80);
 
     startJumpAnimation();
 
