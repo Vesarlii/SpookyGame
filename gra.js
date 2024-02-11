@@ -78,6 +78,31 @@ deathSprites.forEach(function (image) {
   var deathAnimationDuration = 2000;
   var deathSpriteIndex = 0;
   var deathAnimationPlayed = false;
+  
+  
+    var bugSprites = loadSprites([...Array(6).keys()], "bug/run/sprite_bug");
+  var bug = {
+    x: canvas.width,
+    y: canvas.height - tileSize - 16,
+    width: 32,
+    height: 32,
+    speed: 2,
+    currentBugSpriteIndex: 0,
+    lastBugAnimationTime: 0
+  };
+
+ bugSprites.forEach(function (image) {
+    image.onload = function () {
+        console.log("Obrazek robaka załadowany:", image.src);
+    };
+    image.onerror = function () {
+        console.error("Błąd ładowania obrazka robaka:", image.src);
+    };
+});
+
+  function loadBugSprites() {
+    return loadSprites([...Array(6).keys()], "bug/run/sprites_bug");
+  }
 
   function Rectangle() {
     this.width = 16;
@@ -259,9 +284,11 @@ function draw() {
   } else if (gameOver) {
     showGameOverScreen();
   } else {
-    squares.forEach(square => ctx.drawImage(tileset, 0, 0, tileSize, tileSize, square.x, square.y, tileSize, tileSize));
+    squares.forEach((square) =>
+      ctx.drawImage(tileset, 0, 0, tileSize, tileSize, square.x, square.y, tileSize, tileSize)
+    );
 
-    rectangles.forEach(rectangle => {
+    rectangles.forEach((rectangle) => {
       ctx.drawImage(rectangle.image, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 
       rectangle.y += rectangle.speed;
@@ -279,96 +306,141 @@ function draw() {
 
     startJumpAnimation();
 
-    if (lives <= 0) {
-      if (!deathAnimationPlayed) {
-        deathAnimationStartTime = Date.now();
-        deathAnimationPlayed = true;
+    try {
+      var elapsedTimeBug = Date.now() - bug.lastBugAnimationTime;
+
+      if (elapsedTimeBug > 100) {
+        bug.currentBugSpriteIndex = (bug.currentBugSpriteIndex + 1) % bugSprites.length;
+        bug.lastBugAnimationTime = Date.now();
       }
 
-      var elapsedTime = Date.now() - deathAnimationStartTime;
+      bug.x -= bug.speed;
 
-      if (elapsedTime < deathAnimationDuration) {
-        deathSpriteIndex = Math.floor(elapsedTime / (deathAnimationDuration / deathSprites.length));
-      } else {
-        deathAnimationPlayed = false;
-        deathSpriteIndex = 0;
-        gameOver = true;
-        showGameOverScreen();
-        return;
+      if (bug.x + bug.width <= 0) {
+        bug.x = canvas.width;
       }
+
+      ctx.drawImage(bugSprites[bug.currentBugSpriteIndex], bug.x, bug.y, bug.width, bug.height);
+    } catch (error) {
+      console.error("Błąd podczas rysowania robaka:", error);
     }
 
-    if (player.isJumping) {
-      player.y -= player.jumpVelocity;
+     if (lives <= 0) {
+    if (!deathAnimationPlayed) {
+      deathAnimationStartTime = Date.now();
+      deathAnimationPlayed = true;
+    }
 
-      if (player.y <= canvas.height - player.jumpHeight) {
-        player.isJumping = false;
-      }
+    var elapsedTime = Date.now() - deathAnimationStartTime;
+
+    if (elapsedTime < deathAnimationDuration) {
+      deathSpriteIndex = Math.floor(elapsedTime / (deathAnimationDuration / deathSprites.length));
+      ctx.drawImage(deathSprites[deathSpriteIndex], player.x, player.y, player.width, player.height);
     } else {
-      if (player.y < canvas.height - tileSize * 2 - 16) {
-        player.y += player.jumpVelocity;
-      } else {
-        player.onGround = true;
-      }
+      deathAnimationPlayed = false;
+      deathSpriteIndex = 0;
+      gameOver = true;
+      showGameOverScreen();
+      return;
     }
-
-    if (lives > 0) {
-      player.moveLeft && player.x > 0 && (player.x -= player.speed);
-      player.moveRight && player.x + player.width < canvas.width && (player.x += player.speed);
     }
+	else {
+      if (player.isJumping) {
+        player.y -= player.jumpVelocity;
 
-    squares.forEach(square => {
-      if (checkCollision(player, square)) {
-        player.y = square.y - player.height;
-        if (!player.isMoving) {
-          startIdleAnimation();
+        if (player.y <= canvas.height - player.jumpHeight) {
+          player.isJumping = false;
         }
-        player.onGround = true;
+      } else {
+        if (player.y < canvas.height - tileSize * 2 - 16) {
+          player.y += player.jumpVelocity;
+        } else {
+          player.onGround = true;
+        }
       }
-    });
 
-    rectangles.forEach(rectangle => {
-      if (checkCollision(player, rectangle)) {
-        score++;
-        rectangles.splice(rectangles.indexOf(rectangle), 1);
+      if (lives > 0) {
+        player.moveLeft && player.x > 0 && (player.x -= player.speed);
+        player.moveRight &&
+          player.x + player.width < canvas.width &&
+          (player.x += player.speed);
       }
-    });
+
+      squares.forEach((square) => {
+        if (checkCollision(player, square)) {
+          player.y = square.y - player.height;
+          if (!player.isMoving) {
+            startIdleAnimation();
+          }
+          player.onGround = true;
+        }
+      });
+
+      rectangles.forEach((rectangle) => {
+        if (checkCollision(player, rectangle)) {
+          score++;
+          rectangles.splice(rectangles.indexOf(rectangle), 1);
+        }
+      });
 
     if (lives <= 0) {
       ctx.drawImage(deathSprites[deathSpriteIndex], player.x, player.y, player.width, player.height);
     } else {
       startRunAnimation();
 
-      const currentSprites = player.isMoving ? (player.moveRight ? player.runSpritesRight : player.runSpritesLeft) : (player.isJumping ? player.jumpSprites : player.idleSprites);
-      const currentSpriteIndex = player.isMoving ? player.currentRunSpriteIndex : (player.isJumping ? player.currentJumpSpriteIndex : player.currentIdleSpriteIndex);
+        const currentSprites = player.isMoving
+          ? player.moveRight
+            ? player.runSpritesRight
+            : player.runSpritesLeft
+          : player.isJumping
+          ? player.jumpSprites
+          : player.idleSprites;
+        const currentSpriteIndex = player.isMoving
+          ? player.currentRunSpriteIndex
+          : player.isJumping
+          ? player.currentJumpSpriteIndex
+          : player.currentIdleSpriteIndex;
 
-      ctx.drawImage(currentSprites[currentSpriteIndex], player.x, player.y, player.width, player.height);
+        ctx.drawImage(
+          currentSprites[currentSpriteIndex],
+          player.x,
+          player.y,
+          player.width,
+          player.height
+        );
 
-      for (let i = 0; i < lives; i++) {
-        ctx.drawImage(hpImage, 10 + i * 20, 5, 16, 16);
-      }
+        for (let i = 0; i < lives; i++) {
+          ctx.drawImage(hpImage, 10 + i * 20, 5, 16, 16);
+        }
 
-      ctx.textAlign = "right";
-      ctx.fillText("Punkty: " + score, canvas.width - 10, 20);
+        ctx.textAlign = "right";
+        ctx.fillText("Punkty: " + score, canvas.width - 10, 20);
 
+        if (score >= 1 && score <= 15) {
+          const creatureImage = new Image();
+          let spriteNumber = score < 10 ? `0${score}` : score;
+          let spritePath = `images/creature/uprising/sprite_creature${spriteNumber}.png`;
 
-      if (score >= 1 && score <= 15) {
-        const creatureImage = new Image();
-        let spriteNumber = (score < 10) ? `0${score}` : score;
-        let spritePath = `images/creature/uprising/sprite_creature${spriteNumber}.png`;
+          creatureImage.src = spritePath;
 
-        creatureImage.src = spritePath;
+          const middleSquareIndex = Math.floor(squares.length / 2);
+          const middleSquare = squares[middleSquareIndex];
 
-        const middleSquareIndex = Math.floor(squares.length / 2);
-        const middleSquare = squares[middleSquareIndex];
-
-        ctx.drawImage(creatureImage, middleSquare.x, middleSquare.y - 64, 64, 64);
+          ctx.drawImage(
+            creatureImage,
+            middleSquare.x,
+            middleSquare.y - 64,
+            64,
+            64
+          );
+        }
       }
     }
 
     requestAnimationFrame(draw);
   }
 }
+
 
   function showGameOverScreen() {
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
@@ -459,4 +531,4 @@ function showGameOverScreen() {
   ctx.fillText("Twój wynik: " + score, canvas.width / 2, canvas.height / 2);
   ctx.fillText("Naciśnij 'SPACJĘ' aby zacząć jeszcze raz", canvas.width / 2, canvas.height / 2 + 60);
   ctx.fillText("Naciśnij 'S' aby zapisać wynik", canvas.width / 2, canvas.height / 2 + 90);
-}
+} 
