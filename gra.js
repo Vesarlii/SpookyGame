@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
   new Image()  // "sprite_death5.png"
 ];
 
-// Ustaw ścieżki do obrazów
+
 deathSprites[0].src = "images/death/sprite_death0.png";
 deathSprites[1].src = "images/death/sprite_death1.png";
 deathSprites[2].src = "images/death/sprite_death2.png";
@@ -34,7 +34,7 @@ deathSprites[5].src = "images/death/sprite_death5.png";
 
 deathSprites.forEach(function (image) {
   image.onload = function () {
-    // Tutaj możesz umieścić kod, który zostanie wykonany po załadowaniu obrazu
+ 
  
   console.log("Obraz załadowany:", image.src);
  };
@@ -349,7 +349,7 @@ function draw() {
       ctx.textAlign = "right";
       ctx.fillText("Punkty: " + score, canvas.width - 10, 20);
 
-      // Wyświetlanie stworzenia w tle po zdobyciu punktów
+
       if (score >= 1 && score <= 15) {
         const creatureImage = new Image();
         let spriteNumber = (score < 10) ? `0${score}` : score;
