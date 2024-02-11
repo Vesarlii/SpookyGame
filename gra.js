@@ -21,7 +21,8 @@ document.addEventListener("DOMContentLoaded", function () {
   new Image(), // "sprite_death2.png"
   new Image(), // "sprite_death3.png"
   new Image(), // "sprite_death4.png"
-  new Image()  // "sprite_death5.png"
+  new Image(),  // "sprite_death5.png"
+  new Image(),  // "sprite_death6.png"
 ];
 
 
@@ -31,6 +32,7 @@ deathSprites[2].src = "images/death/sprite_death2.png";
 deathSprites[3].src = "images/death/sprite_death3.png";
 deathSprites[4].src = "images/death/sprite_death4.png";
 deathSprites[5].src = "images/death/sprite_death5.png";
+deathSprites[6].src = "images/death/sprite_death6.png";
 
 deathSprites.forEach(function (image) {
   image.onload = function () {
@@ -44,7 +46,7 @@ deathSprites.forEach(function (image) {
   var player = {
     x: 50,
     y: canvas.height - tileSize * 2 - 16,
-    width: 16,
+    width: 32,
     height: 32,
     speed: 4,
     isMoving: false,
@@ -71,7 +73,7 @@ deathSprites.forEach(function (image) {
   var score = 0;
   var lives = 3;
 
- // var deathSprites = ["sprite_death0.png", "sprite_death1.png", "sprite_death2.png", "sprite_death3.png", "sprite_death4.png", "sprite_death5.png"];
+ // var deathSprites = ["sprite_death0.png", "sprite_death1.png", "sprite_death2.png", "sprite_death3.png", "sprite_death4.png", "sprite_death5.png", "sprite_death6.png"];
   var deathAnimationStartTime = 0;
   var deathAnimationDuration = 2000;
   var deathSpriteIndex = 0;
