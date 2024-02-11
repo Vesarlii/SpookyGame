@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
   background.src = "images/background.png";
 
   var hpImage = new Image();
-  hpImage.src = "images/HP/zycie.png";
+  hpImage.src = "images/hp/zycie.png";
 
   var instructionScreenVisible = false;
   var gameOver = false;
@@ -113,7 +113,7 @@ deathSprites.forEach(function (image) {
 
     for (let i = 1; i <= 3; i++) {
       let hpLifeImage = new Image();
-      hpLifeImage.src = "images/HP/zycie.png";
+      hpLifeImage.src = "images/hp/zycie.png";
       hpLifeImage.width = 16;
       hpLifeImage.height = 16;
       hpContainer.appendChild(hpLifeImage);
@@ -130,7 +130,7 @@ deathSprites.forEach(function (image) {
 
       for (let i = 0; i < lives; i++) {
         const img = document.createElement('img');
-        img.src = "images/HP/zycie.png";
+        img.src = "images/hp/zycie.png";
         img.width = 16;
         img.height = 16;
         container.appendChild(img);
