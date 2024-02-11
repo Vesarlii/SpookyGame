@@ -355,7 +355,7 @@ function draw() {
       if (score >= 1 && score <= 15) {
         const creatureImage = new Image();
         let spriteNumber = (score < 10) ? `0${score}` : score;
-        let spritePath = `images/Creature/uprising/sprite_creature${spriteNumber}.png`;
+        let spritePath = `images/creature/uprising/sprite_creature${spriteNumber}.png`;
 
         creatureImage.src = spritePath;
 
