@@ -289,6 +289,11 @@ drawImageWithOffset(flower2, 64, 80);
 drawImageWithOffset(flower3, 64, 80);
 drawImageWithOffset(flower4, 64, 80);
 
+ctx.drawImage(mauzoleumImage, 300, canvas.height - 16 - 98, 90, 98);
+
+  ctx.drawImage(tree01Image, 630, canvas.height - 64 - 16, 64, 64);
+  ctx.drawImage(tree02Image, 200, canvas.height - 64 - 16, 64, 64);
+
     startJumpAnimation();
 
     try {

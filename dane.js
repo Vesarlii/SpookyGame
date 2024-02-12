@@ -33,6 +33,14 @@ deathSprites[4].src = "images/death/sprite_death4.png";
 deathSprites[5].src = "images/death/sprite_death5.png";
 deathSprites[6].src = "images/death/sprite_death6.png";
 
+var mauzoleumImage = new Image();
+mauzoleumImage.src = "images/mauzoleum.png";
+
+var tree01Image = new Image();
+tree01Image.src = "images/tree01.png";
+
+var tree02Image = new Image();
+tree02Image.src = "images/tree02.png";
 
  var player = {
     x: 50,
