@@ -39,7 +39,7 @@ deathSprites[6].src = "images/death/sprite_death6.png";
     y: canvas.height - tileSize * 2 - 16,
     width: 32,
     height: 32,
-    speed: 4,
+    speed: 6,
     isMoving: false,
     moveLeft: false,
     moveRight: false,
@@ -132,7 +132,7 @@ var flower4 = createObject(672, canvas.height - 32);
     var bugSprites = loadSprites([...Array(6).keys()], "bug/run/sprite_bug");
   var bug = {
     x: canvas.width,
-    y: canvas.height - tileSize - 16,
+    y: canvas.height - tileSize - 32,
     width: 32,
     height: 32,
     speed: 2,

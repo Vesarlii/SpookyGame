@@ -193,6 +193,51 @@ bugSprites.forEach(function (image) {
   for (let i = 0; i < canvas.width / tileSize; i++) {
     squares.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize });
   }
+  
+  
+// Kolizja z robakiem
+if (checkCollision(player, bug)) {
+  // Jeśli gracz jest w trakcie skoku, zabicie robaka
+  if (player.isJumping) {
+    // Dodaj animację śmierci robaka
+    bug.currentBugSpriteIndex = 0;  // Reset indeksu animacji
+    bug.lastBugAnimationTime = performance.now();
+    bugSprites = loadSprites([...Array(3).keys()], "bug/death/sprite_");
+    
+    // Zwiększenie punktacji lub dodanie życia
+    if (lives < 3) {
+      lives++;
+    } else {
+      score++;
+    }
+
+    // Ukryj robaka (nie usuwaj go z listy)
+    bug.x = -1000;
+    bug.y = -1000;
+  } else {
+    // Jeśli gracz nie jest w trakcie skoku, odpychanie gracza
+    player.y = bug.y - player.height;
+    player.onGround = true;
+  }
+}
+
+// Animacja śmierci robaka
+function animateBugDeath() {
+  var now = performance.now();
+  var elapsed = now - bug.lastBugAnimationTime;
+
+  if (elapsed > 100) {
+    bug.currentBugSpriteIndex++;
+
+    if (bug.currentBugSpriteIndex >= bugSprites.length) {
+      // Zakończ animację śmierci robaka
+      bugSprites = loadSprites([...Array(6).keys()], "bug/run/sprite_bug");
+      bug.currentBugSpriteIndex = 0;
+    } else {
+      bug.lastBugAnimationTime = now;
+    }
+  }
+}
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -306,6 +351,11 @@ drawImageWithOffset(flower4, 64, 80);
           (player.x += player.speed);
       }
 
+  if (bug.currentBugSpriteIndex < bugSprites.length) {
+    drawImageWithOffset(bugSprites[bug.currentBugSpriteIndex], 0, 0, bug.x, bug.y);
+    animateBugDeath();
+  }
+
       squares.forEach((square) => {
         if (checkCollision(player, square)) {
           player.y = square.y - player.height;
@@ -322,6 +372,30 @@ drawImageWithOffset(flower4, 64, 80);
           rectangles.splice(rectangles.indexOf(rectangle), 1);
         }
       });
+	  
+	  rectangles.forEach((rectangle) => {
+    ctx.drawImage(rectangle.image, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+
+    rectangle.y += rectangle.speed;
+
+    if (rectangle.y + rectangle.height >= canvas.height) {
+      lives--;
+      rectangles.splice(rectangles.indexOf(rectangle), 1);
+    }
+
+    if (checkCollision(player, rectangle)) {
+      // Kolizja z przeszkodą - odpychanie gracza
+      player.y = rectangle.y - player.height;
+      if (!player.isMoving) {
+        startIdleAnimation();
+      }
+      player.onGround = true;
+    }
+  });
+	  
+	  
+
+  
 
     if (lives <= 0) {
       ctx.drawImage(deathSprites[deathSpriteIndex], player.x, player.y, player.width, player.height);
@@ -356,7 +430,7 @@ drawImageWithOffset(flower4, 64, 80);
         ctx.textAlign = "right";
         ctx.fillText("Punkty: " + score, canvas.width - 10, 20);
 
-        if (score >= 1 && score <= 15) {
+        if (score >= 1 && score <= 24) {
           const creatureImage = new Image();
           let spriteNumber = score < 10 ? `0${score}` : score;
           let spritePath = `images/creature/uprising/sprite_creature${spriteNumber}.png`;
@@ -376,6 +450,7 @@ drawImageWithOffset(flower4, 64, 80);
         }
       }
     }
+	updateGameLogic();
 
     requestAnimationFrame(draw);
   }
@@ -425,6 +500,26 @@ drawImageWithOffset(flower4, 64, 80);
       rect1.y + rect1.height > rect2.y
     );
   }
+  
+function updateGameLogic() {
+  // Sprawdzenie kolizji między graczem a robakiem
+  if (checkCollision(player, bug)) {
+    // Tutaj umieść kod reakcji na kolizję
+    if (player.y + player.height <= bug.y) {
+      // Gracz skoczył na robaka, więc zabij robaka
+      console.log("Zabito robaka!");
+      // Tutaj możesz dodać kod do obsługi zabicie robaka, np. zwiększenie wyniku, zresetowanie pozycji robaka, itp.
+      resetBugPosition();
+    } else {
+      // Gracz i robak są na tym samym poziomie, co oznacza utratę życia, restart gry itp.
+      console.log("Kolizja z robakiem, utrata życia!");
+    }
+  }
+}
+
+function resetBugPosition() {
+  bug.x = canvas.width; // Możesz dostosować tę wartość w zależności od twoich potrzeb
+bug.y = canvas.height - tileSize - 32;}
 
   function resetGame() {
     score = 0;
