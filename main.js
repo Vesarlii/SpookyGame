@@ -193,7 +193,9 @@ bugSprites.forEach(function (image) {
   for (let i = 0; i < canvas.width / tileSize; i++) {
     squares.push({ x: i * tileSize, y: canvas.height - tileSize, width: tileSize, height: tileSize });
   }
-  
+ 
+
+ 
   
 // Kolizja z robakiem
 if (checkCollision(player, bug)) {
@@ -242,6 +244,11 @@ function animateBugDeath() {
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+
+if (score === 15) {
+    var audio = document.getElementById("myAudio");
+    audio.play();
+  }
 
   if (instructionScreenVisible) {
     showInstructionScreen();
@@ -314,11 +321,17 @@ ctx.drawImage(mauzoleumImage, 300, canvas.height - 16 - 98, 90, 98);
     } catch (error) {
       console.error("Błąd podczas rysowania robaka:", error);
     }
+function playDeathSound() {
+  var deathSound = document.getElementById("deathSound");
+  deathSound.play();
+}
+
 
      if (lives <= 0) {
     if (!deathAnimationPlayed) {
       deathAnimationStartTime = Date.now();
       deathAnimationPlayed = true;
+	  playDeathSound();
     }
 
     var elapsedTime = Date.now() - deathAnimationStartTime;
@@ -389,7 +402,6 @@ ctx.drawImage(mauzoleumImage, 300, canvas.height - 16 - 98, 90, 98);
     }
 
     if (checkCollision(player, rectangle)) {
-      // Kolizja z przeszkodą - odpychanie gracza
       player.y = rectangle.y - player.height;
       if (!player.isMoving) {
         startIdleAnimation();
@@ -462,17 +474,19 @@ ctx.drawImage(mauzoleumImage, 300, canvas.height - 16 - 98, 90, 98);
 }
 
 
-  function showGameOverScreen() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#fff";
-    ctx.font = "30px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("Koniec gry - Przegrałeś", canvas.width / 2, canvas.height / 2 - 30);
-    ctx.fillText("Twój wynik: " + score, canvas.width / 2, canvas.height / 2);
-    ctx.fillText("Naciśnij 'SPACJĘ' aby zacząć jeszcze raz", canvas.width / 2, canvas.height / 2 + 60);
-    ctx.fillText("Naciśnij 'S' aby zapisać wynik", canvas.width / 2, canvas.height / 2 + 90);
-  }
+function showGameOverScreen() {
+  ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#fff";
+  ctx.font = "30px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("Koniec gry - Przegrałeś", canvas.width / 2, canvas.height / 2 - 30);
+  ctx.fillText("Twój wynik: " + score, canvas.width / 2, canvas.height / 2);
+  ctx.fillText("Naciśnij 'SPACJĘ' aby zacząć jeszcze raz,", canvas.width / 2, canvas.height / 2 + 60);
+  ctx.fillText("ale lepiej odśwież stronę, bo restart jest zbugowany JESZCZE", canvas.width / 2, canvas.height / 2 + 90);
+   
+  ctx.fillText("Naciśnij 'S' aby zapisać wynik", canvas.width / 2, canvas.height / 2 + 120);
+} 
 
   document.addEventListener("keydown", function (e) {
     if (gameOver && e.key === " ") {
@@ -523,7 +537,7 @@ function updateGameLogic() {
 }
 
 function resetBugPosition() {
-  bug.x = canvas.width; // Możesz dostosować tę wartość w zależności od twoich potrzeb
+  bug.x = canvas.width; 
 bug.y = canvas.height - tileSize - 32;}
 
   function resetGame() {
@@ -561,14 +575,3 @@ bug.y = canvas.height - tileSize - 32;}
   }
 });
 
-function showGameOverScreen() {
-  ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "#fff";
-  ctx.font = "30px Arial";
-  ctx.textAlign = "center";
-  ctx.fillText("Koniec gry - Przegrałeś", canvas.width / 2, canvas.height / 2 - 30);
-  ctx.fillText("Twój wynik: " + score, canvas.width / 2, canvas.height / 2);
-  ctx.fillText("Naciśnij 'SPACJĘ' aby zacząć jeszcze raz", canvas.width / 2, canvas.height / 2 + 60);
-  ctx.fillText("Naciśnij 'S' aby zapisać wynik", canvas.width / 2, canvas.height / 2 + 90);
-} 

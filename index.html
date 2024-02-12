@@ -7,9 +7,23 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="imageContainer">
-    <img src="images/SpookyHeader.png" alt="Spooky Game"/>
-  </div>
+
+    <header>
+        <audio id="myAudio">
+            <source src="sounds/creature.mp3" type="audio/mp3">
+            Twoja przeglądarka nie obsługuje elementu audio.
+        </audio>
+		<audio id="deathSound">
+			<source src="sounds/player's death.mp3" type="audio/mp3">
+			Twoja przeglądarka nie obsługuje elementu audio.
+		</audio>
+
+    </header>
+	
+	<div id="imageContainer">
+		<img src="images/SpookyHeader.png" alt="Spooky Game"/>
+	</div>
+  
   <div id="canvasContainer">
     <canvas id="myCanvas" width="1024" height="512"></canvas>
   </div>
@@ -30,6 +44,8 @@
     </tbody>
   </table>
   </div>
+  
+
 
   <script src="dane.js"></script>
   <script src="main.js"></script>

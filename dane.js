@@ -25,13 +25,13 @@ var canvas = document.getElementById("myCanvas");
 ];
 
 
-deathSprites[0].src = "images/death/sprite_death0.png";
-deathSprites[1].src = "images/death/sprite_death1.png";
-deathSprites[2].src = "images/death/sprite_death2.png";
-deathSprites[3].src = "images/death/sprite_death3.png";
-deathSprites[4].src = "images/death/sprite_death4.png";
-deathSprites[5].src = "images/death/sprite_death5.png";
-deathSprites[6].src = "images/death/sprite_death6.png";
+	deathSprites[0].src = "images/death/sprite_death0.png";
+	deathSprites[1].src = "images/death/sprite_death1.png";
+	deathSprites[2].src = "images/death/sprite_death2.png";
+	deathSprites[3].src = "images/death/sprite_death3.png";
+	deathSprites[4].src = "images/death/sprite_death4.png";
+	deathSprites[5].src = "images/death/sprite_death5.png";
+	deathSprites[6].src = "images/death/sprite_death6.png";
 
 var mauzoleumImage = new Image();
 mauzoleumImage.src = "images/mauzoleum.png";
