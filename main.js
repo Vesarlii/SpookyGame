@@ -261,7 +261,7 @@ function draw() {
         ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
     }
 
-    if (score >= 4 && !gameOver) {
+    if (score >= 25 && !gameOver) {
         ctx.drawImage(ballImage, ball.x, ball.y, ball.size, ball.size);
         ball.y += ball.speed;
 
