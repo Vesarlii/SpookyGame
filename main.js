@@ -36,7 +36,13 @@ bugSprites.forEach(function (image) {
     this.image.src = "images/eye/spriteeye_0.png";
   }
 
+function startBackgroundMusic() {
+    backgroundAudio.play();
+}
 
+function stopBackgroundMusic() {
+    backgroundAudio.pause();
+}
 
   function loadIdleSprites() {
     player.idleSprites = loadSprites(player.idleSprites, "sprite_idle");
@@ -244,6 +250,32 @@ function animateBugDeath() {
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+  
+	if (score >=15){
+	    ctx.drawImage(background4, 0, 0, canvas.width, canvas.height);
+	} else if (score >= 10) {
+        ctx.drawImage(background3, 0, 0, canvas.width, canvas.height);
+    } else if (score >= 5) {
+        ctx.drawImage(background2, 0, 0, canvas.width, canvas.height);
+    } else {
+        ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+    }
+
+    if (score >= 4 && !gameOver) {
+        ctx.drawImage(ballImage, ball.x, ball.y, ball.size, ball.size);
+        ball.y += ball.speed;
+
+        // Sprawdź kolizję z graczem
+        if (
+            ball.x < player.x + player.width &&
+            ball.x + ball.size > player.x &&
+            ball.y < player.y + player.height &&
+            ball.y + ball.size > player.y
+        ) {
+            gameOver = true;
+            drawWinScreen();
+        }
+    }
 
 if (score === 15) {
     var audio = document.getElementById("myAudio");
@@ -468,11 +500,16 @@ function playDeathSound() {
       }
     }
 	updateGameLogic();
-
+    startBackgroundMusic();
     requestAnimationFrame(draw);
   }
 }
 
+function drawWinScreen() {
+    ctx.fillStyle = "green";
+    ctx.font = "40px Arial";
+    ctx.fillText("Wygrałeś!", canvas.width / 2 - 100, canvas.height / 2);
+}
 
 function showGameOverScreen() {
   ctx.fillStyle = "rgba(0, 0, 0, 0.7)";

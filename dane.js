@@ -5,8 +5,26 @@ var canvas = document.getElementById("myCanvas");
   var tileset = new Image();
   tileset.src = "tileset.png";
 
-  var background = new Image();
-  background.src = "images/background.png";
+	var background = new Image();
+	background.src = "images/background.png";
+	var background2 = new Image();
+	background2.src = "images/background2.png";
+	var background3 = new Image();
+	background3.src = "images/background3.png";
+	var background4 = new Image();
+	background4.src = "images/background4.png";
+	
+	var backgroundAudio = document.getElementById("backgroundSong");
+
+var ballImage = new Image();
+ballImage.src = "images/kulka.png";
+
+var ball = {
+    x: 400,
+    y: -50,
+    speed: 2,
+	size:50
+};
 
   var hpImage = new Image();
   hpImage.src = "images/hp/zycie.png";
