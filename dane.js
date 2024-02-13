@@ -16,10 +16,11 @@ var canvas = document.getElementById("myCanvas");
 	
 	var backgroundAudio = document.getElementById("backgroundSong");
 
-var ballImage = new Image();
-ballImage.src = "images/kulka.png";
+var ghostImage = new Image();
+ghostImage.src = "images/ghost.png";
+var ghostFalling = false;
 
-var ball = {
+var ghost = {
     x: 400,
     y: -50,
     speed: 2,
@@ -65,7 +66,7 @@ tree02Image.src = "images/tree02.png";
     y: canvas.height - tileSize * 2 - 16,
     width: 32,
     height: 32,
-    speed: 6,
+    speed: 8,
     isMoving: false,
     moveLeft: false,
     moveRight: false,

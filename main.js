@@ -261,21 +261,38 @@ function draw() {
         ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
     }
 
-    if (score >= 25 && !gameOver) {
-        ctx.drawImage(ballImage, ball.x, ball.y, ball.size, ball.size);
-        ball.y += ball.speed;
-
-        // Sprawdź kolizję z graczem
-        if (
-            ball.x < player.x + player.width &&
-            ball.x + ball.size > player.x &&
-            ball.y < player.y + player.height &&
-            ball.y + ball.size > player.y
-        ) {
-            gameOver = true;
-            drawWinScreen();
-        }
+if ((score >=6) && !gameOver) {
+    if (!ghostFalling) {
+        ghost.x = Math.floor(Math.random() * 1001);
+        ghost.y = 0;
+        ghostFalling = true;
     }
+
+    ctx.drawImage(ghostImage, ghost.x, ghost.y, ghost.size, ghost.size);
+    ghost.y += ghost.speed;
+
+    // Sprawdź kolizję z graczem
+    if (
+        ghost.x < player.x + player.width &&
+        ghost.x + ghost.size > player.x &&
+        ghost.y < player.y + player.height &&
+        ghost.y + ghost.size > player.y
+    ) {
+        score--;
+    }
+
+    // Sprawdź, czy duch dotarł do dołu ekranu
+    if (ghost.y > canvas.height) {
+        ghostFalling = false;
+    }
+} else {
+    ghostFalling = false;
+}
+
+
+
+
+	
 
 if (score === 15) {
     var audio = document.getElementById("myAudio");
@@ -505,11 +522,6 @@ function playDeathSound() {
   }
 }
 
-function drawWinScreen() {
-    ctx.fillStyle = "green";
-    ctx.font = "40px Arial";
-    ctx.fillText("Wygrałeś!", canvas.width / 2 - 100, canvas.height / 2);
-}
 
 function showGameOverScreen() {
   ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
@@ -611,4 +623,3 @@ bug.y = canvas.height - tileSize - 32;}
     });
   }
 });
-

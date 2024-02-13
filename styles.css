@@ -22,14 +22,25 @@ canvas {
 
 
 #tab {
+	width: 200px;
 	margin-top: 1400px;
-	background-color:grey;
+	background-color:#330066;
+	margin-bottom: 100px;
+	text-align: center;
+	color :white;
+	font-family: verdana;
+}
+
+th {
+	 width: 100px;
 }
 
 #winners {
-	margin-top: 1200px;
+	margin-top: 1100px;
 	position:absolute;
-	transform: translateY(-60%);
+	transform: translateY(-55%);
+	text-align:center;
+	margin-right:5%;
 
 }
 
