@@ -560,34 +560,93 @@ function showGameOverScreen() {
 
   setInterval(spawnRectangle, 2000);
 
-  function checkCollision(rect1, rect2) {
-    return (
-      rect1.x < rect2.x + rect2.width &&
-      rect1.x + rect1.width > rect2.x &&
-      rect1.y < rect2.y + rect2.height &&
-      rect1.y + rect1.height > rect2.y
-    );
+function checkCollision(rect1, rect2, collisionHeightFactor = 1, frontLength = 0, backLength = 0) {
+  const adjustedRect1Height = rect1.height * collisionHeightFactor;
+  const adjustedRect2Height = rect2.height * collisionHeightFactor;
+
+  const rect1FrontEdge = rect1.x + frontLength;
+  const rect1BackEdge = rect1.x + rect1.width - backLength;
+
+  const rect2FrontEdge = rect2.x;
+  const rect2BackEdge = rect2.x + rect2.width;
+
+  return (
+    rect1FrontEdge < rect2BackEdge &&
+    rect1BackEdge > rect2FrontEdge &&
+    rect1.y < rect2.y + adjustedRect2Height &&
+    rect1.y + adjustedRect1Height > rect2.y
+  );
+}
+
+const bugCheckboxFrontLength = 5;
+const bugCheckboxBackLength = 10;
+
+function resetBugPosition() {
+  bug.x = canvas.width;
+  bug.y = canvas.height - tileSize - 32;
+}
+
+let isBugAlive = true; // Dodaj zmienną do śledzenia, czy robak żyje
+
+function isOnGround() {
+  return player.y + player.height >= canvas.height - tileSize;
+}
+
+function handleJump() {
+  if (!player.isJumping && isOnGround()) {
+    player.isJumping = true;
+    player.jumpStartY = player.y;
+    player.jumpStartTime = Date.now();
   }
-  
-function updateGameLogic() {
-  // Sprawdzenie kolizji między graczem a robakiem
-  if (checkCollision(player, bug)) {
-    // Tutaj umieść kod reakcji na kolizję
-    if (player.y + player.height <= bug.y) {
-      // Gracz skoczył na robaka, więc zabij robaka
-      console.log("Zabito robaka!");
-      // Tutaj możesz dodać kod do obsługi zabicie robaka, np. zwiększenie wyniku, zresetowanie pozycji robaka, itp.
-      resetBugPosition();
+}
+
+function handleBugCollision() {
+  const collisionHeightFactor = 0.5;
+  const bugCheckboxFrontLength = 5;
+  const bugCheckboxBackLength = 10;
+
+  if (checkCollision(player, bug, collisionHeightFactor, bugCheckboxFrontLength, bugCheckboxBackLength) && isBugAlive) {
+    const playerCenterX = player.x + player.width / 2;
+    const bugCenterX = bug.x + bug.width / 2;
+
+    if (playerCenterX < bugCenterX) {
+      player.x -= bug.speed;
     } else {
-      // Gracz i robak są na tym samym poziomie, co oznacza utratę życia, restart gry itp.
-      console.log("Kolizja z robakiem, utrata życia!");
+      player.x += bug.speed;
+    }
+
+    const playerBottom = player.y + player.height;
+    if (player.isJumping) {
+      const playerBottom = player.y + player.height; // Dolna krawędź gracza
+
+      if (playerBottom <= bug.y) {
+        // Jeśli dolna krawędź gracza znajduje się powyżej górnej krawędzi robaka, uznaj to za zabicie robaka
+        isBugAlive = false; // Ustaw flagę, że robak został zabity
+        resetBugPosition();
+        setTimeout(() => {
+          isBugAlive = true; // Po 10 sekundach ustaw flagę, że robak jest żywy
+        }, 10000);
+
+        if (lives >= 3) {
+          score++;
+        } else {
+          lives++;
+        }
+
+        // Tutaj dodaj kod obsługujący skok gracza po zderzeniu z robakiem
+        player.isJumping = true; // Ustaw, że gracz zaczyna skok
+        setTimeout(() => {
+          player.isJumping = false; // Zakończ skok po pewnym czasie (możesz dostosować ten czas)
+        }, czasSkoku); // czasSkoku to zmienna reprezentująca czas trwania skoku
+      }
     }
   }
 }
 
-function resetBugPosition() {
-  bug.x = canvas.width; 
-bug.y = canvas.height - tileSize - 32;}
+function updateGameLogic() {
+  handleBugCollision();
+}
+
 
   function resetGame() {
     score = 0;
