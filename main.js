@@ -332,7 +332,8 @@ if (score === 15) {
   } else if (gameOver) {
 
 	if (lives>0&&specialScore>=1)
-			win();
+	{win();
+	}
 		else {
 		    showGameOverScreen();	
 		}
@@ -560,6 +561,8 @@ function playDeathSound() {
   }
 }
 function win () {
+	var winSound = document.getElementById("winSound");
+    winSound.play();
   ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "#fff";

@@ -35,7 +35,7 @@ var specialScore = 0;
 var ball = {
 	x: 400,
     y: -50,
-    speed: 2,
+    speed: 1,
 	size:50
 };
 
