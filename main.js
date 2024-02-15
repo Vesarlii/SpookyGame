@@ -354,6 +354,8 @@ if (score === 15) {
 
       if (checkCollision(player, rectangle)) {
         score++;
+			var pointSound = document.getElementById("pointSound");
+    pointSound.play()
         rectangles.splice(rectangles.indexOf(rectangle), 1);
       }
     });
