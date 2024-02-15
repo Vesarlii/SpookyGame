@@ -27,6 +27,18 @@ var ghost = {
 	size:50
 };
 
+var ballImage = new Image();
+ballImage.src = "images/kulka.png";
+var ballFalling = false;
+var specialScore = 0;
+
+var ball = {
+	x: 400,
+    y: -50,
+    speed: 2,
+	size:50
+};
+
   var hpImage = new Image();
   hpImage.src = "images/hp/zycie.png";
 

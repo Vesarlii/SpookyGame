@@ -10,8 +10,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-
-
 bugSprites.forEach(function (image) {
     image.onload = function () {
         console.log("Obrazek robaka załadowany:", image.src);
@@ -95,7 +93,6 @@ function stopBackgroundMusic() {
   loadIdleSprites();
   loadRunSprites();
   loadJumpSprites();
-  loadHpSprites();
 
   showInstructionScreen();
 
@@ -108,6 +105,8 @@ function stopBackgroundMusic() {
   });
 
   function showInstructionScreen() {
+	        ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "#fff";
@@ -261,6 +260,35 @@ function draw() {
         ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
     }
 
+if ((score >=3) && !gameOver) {
+    if (!ballFalling) {
+        ball.x = Math.floor(Math.random() * 1001);
+        ball.y = 0;
+        ballFalling = true;
+    }
+
+    ctx.drawImage(ballImage, ball.x, ball.y, ball.size, ball.size);
+    ball.y += ball.speed;
+
+    // Sprawdź kolizję z graczem
+    if (
+        ball.x < player.x + player.width &&
+        ball.x + ball.size > player.x &&
+        ball.y < player.y + player.height &&
+        ball.y + ball.size > player.y
+    ) {
+        specialScore++;
+    }
+
+
+    if (ball.y > canvas.height) {
+        ballFalling = false;
+    }
+} else {
+    ballFalling = false;
+}
+
+
 if ((score >=6) && !gameOver) {
     if (!ghostFalling) {
         ghost.x = Math.floor(Math.random() * 1001);
@@ -291,7 +319,6 @@ if ((score >=6) && !gameOver) {
 
 
 
-
 	
 
 if (score === 15) {
@@ -300,9 +327,15 @@ if (score === 15) {
   }
 
   if (instructionScreenVisible) {
-    showInstructionScreen();
+
+	showInstructionScreen();
   } else if (gameOver) {
-    showGameOverScreen();
+
+	if (lives>0&&specialScore>=1)
+			win();
+		else {
+		    showGameOverScreen();	
+		}
   } else {
     squares.forEach((square) =>
       ctx.drawImage(tileset, 0, 0, tileSize, tileSize, square.x, square.y, tileSize, tileSize)
@@ -459,7 +492,12 @@ function playDeathSound() {
     }
   });
 	  
-	  
+	if (lives>0&&specialScore>=1)  
+	{
+	  gameOver = true;
+      win();
+      return;
+	}
 
   
 
@@ -521,7 +559,19 @@ function playDeathSound() {
     requestAnimationFrame(draw);
   }
 }
-
+function win () {
+  ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#fff";
+  ctx.font = "30px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("WIN!!!", canvas.width / 2, canvas.height / 2 - 30);	
+  ctx.fillText("Twój wynik: " + score, canvas.width / 2, canvas.height / 2);
+  ctx.fillText("Naciśnij 'SPACJĘ' aby zacząć jeszcze raz,", canvas.width / 2, canvas.height / 2 + 60);
+  ctx.fillText("ale lepiej odśwież stronę, bo restart jest zbugowany JESZCZE", canvas.width / 2, canvas.height / 2 + 90);
+   
+  ctx.fillText("Naciśnij 'S' aby zapisać wynik", canvas.width / 2, canvas.height / 2 + 120);	
+}
 
 function showGameOverScreen() {
   ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
@@ -664,13 +714,13 @@ function updateGameLogic() {
     player.lastRunAnimationTime = 0;
     player.currentJumpSpriteIndex = 0;
     player.lastJumpAnimationTime = 0;
+	specialScore = 0;
 
     document.removeEventListener("keydown", keyHandler);
     document.removeEventListener("keyup", keyHandler);
 
     document.addEventListener("keydown", keyHandler);
     document.addEventListener("keyup", keyHandler);
-
     showInstructionScreen();
 
     document.addEventListener("keydown", function startGameOnKeyPress(e) {
