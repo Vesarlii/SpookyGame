@@ -64,6 +64,8 @@ var ball = {
 	deathSprites[5].src = "images/death/sprite_death5.png";
 	deathSprites[6].src = "images/death/sprite_death6.png";
 
+  // var deathSprites = ["sprite_death0.png", "sprite_death1.png", "sprite_death2.png", "sprite_death3.png", "sprite_death4.png", "sprite_death5.png", "sprite_death6.png"];
+
 var mauzoleumImage = new Image();
 mauzoleumImage.src = "images/mauzoleum.png";
 
@@ -103,7 +105,7 @@ tree02Image.src = "images/tree02.png";
   var score = 0;
   var lives = 3;
 
- // var deathSprites = ["sprite_death0.png", "sprite_death1.png", "sprite_death2.png", "sprite_death3.png", "sprite_death4.png", "sprite_death5.png", "sprite_death6.png"];
+ 
   var deathAnimationStartTime = 0;
   var deathAnimationDuration = 2000;
   var deathSpriteIndex = 0;
