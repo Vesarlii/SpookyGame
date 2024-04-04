@@ -1,4 +1,4 @@
 ![Screen z gry](images/screenshot.png)
 
-###Spooky Game###
+### Spooky Game
 https://vesarlii.github.io/SpookyGame/
