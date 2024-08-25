@@ -28,7 +28,7 @@ bugSprites.forEach(function (image) {
     this.height = 16;
     this.x = Math.random() * canvas.width;
     this.y = 0;
-    this.speed = 2;
+    this.speed = 1.5;
 
     this.image = new Image();
     this.image.src = "images/eye/spriteeye_0.png";
