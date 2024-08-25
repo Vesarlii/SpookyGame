@@ -80,7 +80,7 @@ tree02Image.src = "images/tree02.png";
     y: canvas.height - tileSize * 2 - 16,
     width: 32,
     height: 32,
-    speed: 8,
+    speed: 3,
     isMoving: false,
     moveLeft: false,
     moveRight: false,
@@ -103,7 +103,7 @@ tree02Image.src = "images/tree02.png";
   var rectangles = [];
   var squares = [];
   var score = 0;
-  var lives = 3;
+  var lives = 33;
 
  
   var deathAnimationStartTime = 0;
